@@ -4,6 +4,7 @@
 
 package com.mycompany.librarymanagementsystem;
 
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -34,57 +35,60 @@ public class LibraryManagementSystem {
         do {
             showMenu();
             
-            // ! validate
             while(true){
                 
                 System.out.print("Option: ");
                 
                 try {
                     choice = Integer.parseInt(scan.nextLine());
+                    if(choice > 8 || choice < 0){
+                        throw new Exception();
+                    }
                     break;
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid Choice. Please input a valid digit (0-8)");
+                } catch (Exception e) {
+                    System.out.println(
+                            "Invalid Choice. Please input a valid digit (0 to 8)"
+                    );
                 }
             }
             
             
             switch (choice) {
-                case 1:
+                case 1: // Add new Book
                     Book newBook = new Book();
                     library.addBook(newBook);
-                    System.out.println("\n--- Book Successfully Added to Library ---\n");
                     break;
                     
-                case 2:
-                    library.viewAllBooks();
+                case 2: // View All Books
+                    library.viewBooks(library.libraryBooks);
                     break;
                     
-                case 3:
-                    // Search For Book
+                case 3: // Search for Book
+                    List<Book> bookSearchResults = library.searchBooks();
+                    library.viewBooks(bookSearchResults);
                     break;
                     
-                case 4:
+                case 4: // Add new Member
                     Member newMember = new Member();
                     library.addMember(newMember);
-                    System.out.println("\n--- Member Successfully Registered ---\n");
                     break;
                     
-                case 5:
-                    library.viewAllMembers();
+                case 5: // View All Members
+                    library.viewMembers(library.libraryMembers);
                     break;
                     
-                case 6:
-                    // Check Out Book
+                case 6: // Search for Members
+                    List<Member> memberSearchResults = library.searchMembers();
+                    library.viewMembers(memberSearchResults);
                     break;
                     
                 case 7:
                     // Check In Book
                     break;
                     
-                default:
-                    
-                    
-                    
+                case 8:
+                    // Check In Book
+                    break;
             }
         } while (choice != 0);
     }
@@ -99,9 +103,10 @@ public class LibraryManagementSystem {
                            Press 2 to View All Books 
                            Press 3 to Search For Book 
                            Press 4 to Register New Member 
-                           Press 5 to View Members 
-                           Press 6 to Check Out Book 
-                           Press 7 to Check In Book 
+                           Press 5 to View All Members 
+                           Press 6 to Search for Member
+                           Press 7 to Check Out Book 
+                           Press 8 to Check In Book 
                            -----------------------------------------------""");
     }
 }

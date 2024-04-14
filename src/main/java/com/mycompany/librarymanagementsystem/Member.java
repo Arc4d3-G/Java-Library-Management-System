@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.librarymanagementsystem;
 
 import java.util.ArrayList;
@@ -12,7 +8,7 @@ import java.util.regex.Pattern;
 
 
 /**
- *
+ * Book class containing relevant public properties.
  * @author brdde
  */
 public class Member {
@@ -49,8 +45,8 @@ public class Member {
                     throw new Exception();
                 }
             } catch (Exception e) {
-                System.out.println("Invalid Name. Please ensure the Name is not empty"
-                        + " and is no more than 50 characters long.");
+                System.out.println("Invalid Name. Please ensure the Name is not"
+                        + " empty and is no more than 50 characters long.");
             }
         }
         
@@ -75,7 +71,8 @@ public class Member {
                     throw new Exception();
                 }
             } catch (Exception e) {
-                System.out.println("Invalid Email. Please ensure the input is a valid email address.");
+                System.out.println("Invalid Email. Please ensure the input is a"
+                        + " valid email address.");
             }
         }
     }

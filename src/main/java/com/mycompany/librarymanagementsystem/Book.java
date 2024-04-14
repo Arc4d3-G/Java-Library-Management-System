@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.librarymanagementsystem;
 
 import java.util.Scanner;
@@ -24,8 +20,11 @@ public class Book {
      */
     public Book() {
         
-        System.out.println("---- Adding New Book ----");
-        System.out.println("Please provide the book's ISBN number, Title & Author.");
+        System.out.println(
+                "\n---- Adding New Book ----\n");
+        System.out.println(
+                "Please provide the book's ISBN number, Title & Author."
+        );
         
         /**
          *  Validation loop with error handling for book ISBN number.
@@ -47,8 +46,10 @@ public class Book {
                     throw new Exception();
                 }
             } catch (Exception e) {
-                System.out.println("Invalid ISBN. Please ensure the ISBN cosists"
-                        + " of 10-13 digits without any letters/symbols.");
+                System.out.println(
+                        "Invalid ISBN. Please ensure the ISBN cosists"
+                        + " of 10-13 digits without any letters/symbols."
+                );
             }
         }
         
@@ -70,7 +71,9 @@ public class Book {
                     throw new Exception();
                 }
             } catch (Exception e) {
-                System.out.println("Invalid Title. Please ensure the Title is not empty.");
+                System.out.println(
+                        "Invalid Title. Please ensure the Title is not empty."
+                );
             }
         }
          
@@ -92,7 +95,9 @@ public class Book {
                     throw new Exception();
                 }
             } catch (Exception e) {
-                System.out.println("Invalid Author. Please ensure the Title is not empty.");
+                System.out.println(
+                        "Invalid Author. Please ensure the Author is not empty."
+                );
             }
         }
         
@@ -102,7 +107,9 @@ public class Book {
          */
         while(true) {
             
-            System.out.print("Is the Book currently availible for checkout? Y/N: ");
+            System.out.print(
+                    "Is the Book currently availible for checkout? Y/N: "
+            );
             
             try {
                 String input = scan.nextLine();
@@ -117,7 +124,9 @@ public class Book {
                     throw new Exception();
                 }
             } catch (Exception e) {
-                System.out.println("Invalid Input. Please enter either \"Y\" or \"N\".");
+                System.out.println(
+                        "Invalid Input. Please enter either \"Y\" or \"N\"."
+                );
             }
         }
   
