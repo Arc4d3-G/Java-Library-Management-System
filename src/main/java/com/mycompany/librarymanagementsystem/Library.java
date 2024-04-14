@@ -187,10 +187,14 @@ public class Library {
              * In the format we specify we want the text to be left-aligned 
              * with "-" followed by a digit representing the width, and finally
              * "s" to indicate we're formatting a string.
-             */            
+             */   
+            System.out.println(
+                    "-----------------------------------------------"
+                    + "------------------------------------------------"
+            );
             System.out.printf(
-                    "%-30s %-30s %-5s \n",
-                    "Name", "Email", "# of Books Checked Out" 
+                    "%-30s %-30s %-100s \n",
+                    "NAME", "EMAIL", "CURRENT BOOKS CHECKED OUT" 
             );
             System.out.println(
                     "-----------------------------------------------"
@@ -202,24 +206,31 @@ public class Library {
              * each member in our parameter list object.
              */
             for( int i = 0; i < results.size(); i++){
+                Member member = results.get(i);
+                boolean isBorrowing = !member.borrowedBooks.isEmpty();
+
+                System.out.printf("%-30s %-30s %-40s\n", 
+                    member.name, member.email, isBorrowing ? member.borrowedBooks.get(0).title : "NONE");
                 
-                String name = results.get(i).name;
-                String email = results.get(i).email;
-                int numOfCheckedOut = results.get(i).borrowedBooks.size();
+                if(member.borrowedBooks.size() > 1){
+                    for (int j = 1; j < member.borrowedBooks.size(); j++){
+                    System.out.printf(
+                            "%-30s %-30s %-40s\n"," ", " ",
+                            member.borrowedBooks.get(j).title);
+                }
+                }
                 
-                System.out.printf("%-30s %-30s %-5s \n", 
-                        name, email,numOfCheckedOut);
-            }
-            System.out.println(
+                System.out.println(
                     "-----------------------------------------------"
-                    + "------------------------------------------------\n"
+                    + "------------------------------------------------"
             );
+            }
             
         } else {
-            System.out.println("No Results Found.\n");
+            System.out.println("\nNo Results Found.\n");
         }
         
-        System.out.println("--- End of List ---\n");
+        System.out.println("\n--- End of List ---\n");
 
     }
 
@@ -466,5 +477,226 @@ public class Library {
             }
         return searchResults;    
     }
-   
+    
+    public void checkOut(){
+        
+        System.out.println("\n---- Checking Out Book ----\n");
+        System.out.println(
+                "Please provide the Email of the Member checking out "
+                        + "(must be registered member)."
+        );
+        
+        String searchEmail;
+        Member matchedMember = null;
+        Book matchedBook = null;
+        long searchISBN;
+        boolean isMember = false;
+        boolean isBook = false;
+        
+        while(true) {
+            
+            System.out.print("Enter Member Email: ");
+
+            try {
+                String input = scan.nextLine();
+                String regex = "^(.+)@(.+)$";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(input);
+                if(matcher.matches()){
+                    searchEmail = input;
+                    break;
+            } else {
+                throw new Exception();
+            }
+            } catch (Exception e) {
+                System.out.println(
+                        "Invalid Email. Please ensure the email is a"
+                        + " valid email address."
+                );
+            }
+
+        }
+        
+        for ( int i = 0; i < libraryMembers.size(); i++){
+            
+            Member member = libraryMembers.get(i);
+            if (member.email.equalsIgnoreCase(searchEmail)){
+                isMember = true;
+                matchedMember = member;
+                break;
+            }
+        }
+        
+        if (isMember){
+            System.out.println("""
+                             
+                             Member Match Found!
+                             Please provide the ISBN number of the book being checked out""");
+            
+            while(true) {
+
+                System.out.print("Book ISBN: ");
+
+                try {
+                    String input = scan.nextLine();
+                    long inputAsLong = Long.parseLong(input);
+                    int length = input.length();
+
+                    if (length >= 10 && length <= 13){
+                        searchISBN = inputAsLong;
+                        break;  
+                    } else {
+                        throw new Exception();
+                    }
+                } catch (Exception e) {
+                    System.out.println(
+                            "Invalid ISBN. Please ensure the ISBN cosists"
+                            + " of 10-13 digits without any letters/symbols."
+                    );
+                }    
+            }
+            
+            for ( int i = 0; i < libraryBooks.size(); i++){
+                Book book = libraryBooks.get(i);
+                if (book.ISBN == searchISBN){
+                    matchedBook = book;
+                    isBook = true;
+                }
+            }
+            
+            if (isBook && matchedBook.isAvailible){
+                
+                matchedBook.isAvailible = false;
+                matchedMember.borrowedBooks.add(matchedBook);
+                
+                System.out.println("\nBook \"" + matchedBook.title 
+                        + "\" has successfully been checked out by Member \"" 
+                        + matchedMember.name + "\"."
+                        + "\n---- Checkout Complete ----\n");
+                
+            } else if (isBook && matchedBook.isAvailible == false) {
+                
+                System.out.println("\nBook \"" + matchedBook.title + 
+                        "\" is not availible for Check Out. "
+                                + "Checkout has been aborted.\n");
+                
+            } else {
+                
+                System.out.println("\nNo Book with ISBN \"" + searchISBN 
+                    + "\" was found. Checkout has been aborted.\n");
+            }
+            
+        } else {
+            System.out.println("\nNo Member with email \"" + searchEmail 
+                    + "\" was found. Checkout has been aborted.\n");
+        }
+    }
+    
+    public void checkIn(){
+        
+        System.out.println("\n---- Checking In Book ----\n");
+        System.out.println(
+                "Please provide the Email of the Member checking in "
+                        + "(must be registered member)."
+        );
+        
+        String searchEmail;
+        Member matchedMember = null;
+        Book matchedBook = null;
+        long searchISBN;
+        boolean isMember = false;
+        boolean isBook = false;
+        
+        while(true) {
+            
+            System.out.print("Enter Member Email: ");
+
+            try {
+                String input = scan.nextLine();
+                String regex = "^(.+)@(.+)$";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(input);
+                if(matcher.matches()){
+                    searchEmail = input;
+                    break;
+            } else {
+                throw new Exception();
+            }
+            } catch (Exception e) {
+                System.out.println(
+                        "Invalid Email. Please ensure the email is a"
+                        + " valid email address."
+                );
+            }
+
+        }
+        
+        for ( int i = 0; i < libraryMembers.size(); i++){
+            
+            Member member = libraryMembers.get(i);
+            if (member.email.equalsIgnoreCase(searchEmail)){
+                isMember = true;
+                matchedMember = member;
+                break;
+            }
+        }
+        
+        if (isMember){
+            System.out.println("""
+                             
+                             Member Match Found!
+                             Please provide the ISBN number of the book being checked in""");
+            
+            while(true) {
+
+                System.out.print("Book ISBN: ");
+
+                try {
+                    String input = scan.nextLine();
+                    long inputAsLong = Long.parseLong(input);
+                    int length = input.length();
+
+                    if (length >= 10 && length <= 13){
+                        searchISBN = inputAsLong;
+                        break;  
+                    } else {
+                        throw new Exception();
+                    }
+                } catch (Exception e) {
+                    System.out.println(
+                            "Invalid ISBN. Please ensure the ISBN cosists"
+                            + " of 10-13 digits without any letters/symbols."
+                    );
+                }    
+            }
+            
+            for ( int i = 0; i < libraryBooks.size(); i++){
+                Book book = libraryBooks.get(i);
+                if (book.ISBN == searchISBN){
+                    matchedBook = book;
+                    isBook = true;
+                }
+            }
+            
+            if (isBook){
+                
+                matchedBook.isAvailible = true;
+                matchedMember.borrowedBooks.remove(matchedBook);
+                
+                System.out.println("\nBook \"" + matchedBook.title 
+                        + "\" has successfully been checked in by Member \"" 
+                        + matchedMember.name + "\"."
+                        + "\n---- Checkin Complete ----\n");
+                
+            } else {
+                
+                System.out.println("\nNo Book with ISBN \"" + searchISBN 
+                    + "\" was found. Checkout has been aborted.\n");
+            }
+            
+        } else {
+            System.out.println("\nNo Member with email \"" + searchEmail 
+                    + "\" was found. Checkout has been aborted.\n");
+        }
+    }
 }

@@ -83,11 +83,11 @@ public class LibraryManagementSystem {
                     break;
                     
                 case 7:
-                    // Check In Book
+                    library.checkOut();
                     break;
                     
                 case 8:
-                    // Check In Book
+                    library.checkIn();
                     break;
             }
         } while (choice != 0);

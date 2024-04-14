@@ -17,7 +17,7 @@ public class Member {
     public String email;
     public List<Book> borrowedBooks = new ArrayList<>();
     
-    
+
     /**
      * Book constructor contains input validation for each property 
      */
