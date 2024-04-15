@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package com.mycompany.librarymanagementsystem;
 
 import java.util.List;
@@ -82,11 +78,11 @@ public class LibraryManagementSystem {
                     library.viewMembers(memberSearchResults);
                     break;
                     
-                case 7:
+                case 7: // Checkout Book
                     library.checkOut();
                     break;
                     
-                case 8:
+                case 8: // Checkin Book
                     library.checkIn();
                     break;
             }

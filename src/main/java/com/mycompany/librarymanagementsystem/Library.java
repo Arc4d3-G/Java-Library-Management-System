@@ -478,6 +478,13 @@ public class Library {
         return searchResults;    
     }
     
+    /**
+     * Method used for checking-out a book. It first prompts for a registered
+     * user to associate the checked out book with, checks if the user is indeed
+     * registered, prompts for the book's ISBN, checks if it exists in the library,
+     * checks if it is available for checkout, and finally adds the book to the
+     * member's borrowedBooks list and sets the book's isAvailable to false.
+     */
     public void checkOut(){
         
         System.out.println("\n---- Checking Out Book ----\n");
@@ -486,6 +493,7 @@ public class Library {
                         + "(must be registered member)."
         );
         
+        // Variables used for validation and comparison
         String searchEmail;
         Member matchedMember = null;
         Book matchedBook = null;
@@ -493,6 +501,7 @@ public class Library {
         boolean isMember = false;
         boolean isBook = false;
         
+        // Prompt user for member email and validate using regex
         while(true) {
             
             System.out.print("Enter Member Email: ");
@@ -517,6 +526,7 @@ public class Library {
 
         }
         
+        // Check if member with input email exists in libraryMembers
         for ( int i = 0; i < libraryMembers.size(); i++){
             
             Member member = libraryMembers.get(i);
@@ -527,12 +537,14 @@ public class Library {
             }
         }
         
+        // If member is registed, proceeds with checkout, else checkout is aborted
         if (isMember){
             System.out.println("""
                              
                              Member Match Found!
                              Please provide the ISBN number of the book being checked out""");
             
+            // Prompt for book ISBN and validate input
             while(true) {
 
                 System.out.print("Book ISBN: ");
@@ -556,6 +568,7 @@ public class Library {
                 }    
             }
             
+            // Check if book with input ISBN exists in library
             for ( int i = 0; i < libraryBooks.size(); i++){
                 Book book = libraryBooks.get(i);
                 if (book.ISBN == searchISBN){
@@ -564,6 +577,11 @@ public class Library {
                 }
             }
             
+            /**
+             * Only if the book is registered & is available for checkout will
+             * the book be checked out. This is done by setting isAvailable to
+             * false, and adding the book the the member's borrowedBooks list.
+             */
             if (isBook && matchedBook.isAvailible){
                 
                 matchedBook.isAvailible = false;
@@ -574,12 +592,14 @@ public class Library {
                         + matchedMember.name + "\"."
                         + "\n---- Checkout Complete ----\n");
                 
+            // if the book exists but isn't available, checkout is aborted.    
             } else if (isBook && matchedBook.isAvailible == false) {
                 
                 System.out.println("\nBook \"" + matchedBook.title + 
                         "\" is not availible for Check Out. "
                                 + "Checkout has been aborted.\n");
-                
+            
+            // If book does not exists then checkout is aborted.
             } else {
                 
                 System.out.println("\nNo Book with ISBN \"" + searchISBN 
@@ -592,6 +612,11 @@ public class Library {
         }
     }
     
+    /**
+     * Method is similar to {@link #checkOut()}, but it set's the book's 
+     * availability to true and removes the book from the member's 
+     * borrowedBooks list.
+     */
     public void checkIn(){
         
         System.out.println("\n---- Checking In Book ----\n");
@@ -600,6 +625,7 @@ public class Library {
                         + "(must be registered member)."
         );
         
+        // Variables used for validation and comparison
         String searchEmail;
         Member matchedMember = null;
         Book matchedBook = null;
@@ -607,6 +633,7 @@ public class Library {
         boolean isMember = false;
         boolean isBook = false;
         
+        // Prompt user for member email and validate using regex
         while(true) {
             
             System.out.print("Enter Member Email: ");
@@ -631,6 +658,7 @@ public class Library {
 
         }
         
+        // Check if member with input email exists in libraryMembers
         for ( int i = 0; i < libraryMembers.size(); i++){
             
             Member member = libraryMembers.get(i);
@@ -641,12 +669,14 @@ public class Library {
             }
         }
         
+        // If member is registed, proceeds with checkout, else checkout is aborted
         if (isMember){
             System.out.println("""
                              
                              Member Match Found!
                              Please provide the ISBN number of the book being checked in""");
             
+            // Prompt for book ISBN and validate input
             while(true) {
 
                 System.out.print("Book ISBN: ");
@@ -670,6 +700,7 @@ public class Library {
                 }    
             }
             
+            // Check if book with input ISBN exists in library
             for ( int i = 0; i < libraryBooks.size(); i++){
                 Book book = libraryBooks.get(i);
                 if (book.ISBN == searchISBN){
@@ -678,7 +709,14 @@ public class Library {
                 }
             }
             
-            if (isBook){
+            boolean isBorrowed = matchedMember.borrowedBooks.contains(matchedBook);
+            
+            /**
+             * Only if the book is registered and was checked out by the member 
+             * will the book be checked out. This is done by setting isAvailable to
+             * true, and removing the book the the member's borrowedBooks list.
+             */
+            if (isBook && isBorrowed){
                 
                 matchedBook.isAvailible = true;
                 matchedMember.borrowedBooks.remove(matchedBook);
@@ -687,13 +725,22 @@ public class Library {
                         + "\" has successfully been checked in by Member \"" 
                         + matchedMember.name + "\"."
                         + "\n---- Checkin Complete ----\n");
+            /**
+             * If the book exists but was not checked out by the member,
+             * check-in is aborted. 
+            */
+            } else if (isBook && !isBorrowed) {
                 
+                System.out.println("\nNo Book with ISBN \"" + searchISBN 
+                    + "\" was Checked out by member \"" 
+                        + matchedMember.name + "\". Checkout has been aborted.\n"
+                );
+            // If book is not found in library, check-in is aborted    
             } else {
-                
                 System.out.println("\nNo Book with ISBN \"" + searchISBN 
                     + "\" was found. Checkout has been aborted.\n");
             }
-            
+        // If member is not registered, check-in is aborted.   
         } else {
             System.out.println("\nNo Member with email \"" + searchEmail 
                     + "\" was found. Checkout has been aborted.\n");
