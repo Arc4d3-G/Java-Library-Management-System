@@ -11,7 +11,7 @@ public class LibraryManagementSystem {
 
     public static void main(String[] args) {
         
-        
+        // Intro image for fun :)
         String introMessage = """
               __...--~~~~~-._   _.-~~~~~--...__
             //    LIBRARY    `V'      BY       \\\\ 
@@ -24,13 +24,21 @@ public class LibraryManagementSystem {
      
         System.out.println(introMessage); 
         Scanner scan = new Scanner(System.in);
-        int choice;
+        // Choice used for switch case below
+        int choice; 
+        // Instanciate a new Library object.
+        Library library = new Library(); 
         
-        Library library = new Library();
-        
+        /**
+         * This loop continues to display the menu, prompting the user for an
+         * option until "0" is input, at which point the loop exits and the 
+         * program ends.
+         */
         do {
+            // Print the navigation menu at the start of each loop through.
             showMenu();
             
+            // Prompt and validate input before passing choice to the switch.
             while(true){
                 
                 System.out.print("Option: ");
@@ -48,47 +56,74 @@ public class LibraryManagementSystem {
                 }
             }
             
-            
+
+            /**
+             * Switch statement with corresponding menu choice procedures.
+             * See the Book, Member and Library classes for further documentation
+             * on each method.
+             */
             switch (choice) {
-                case 1: // Add new Book
+                /**
+                 * Add new books to the library by creating a new Book and
+                 * passing it to the library.addBook method.
+                 */
+                case 1: 
                     Book newBook = new Book();
                     library.addBook(newBook);
                     break;
-                    
-                case 2: // View All Books
+                /**
+                 * View all books by passing the libraryBooks object to the 
+                 * viewBooks() method.
+                 */    
+                case 2:
                     library.viewBooks(library.libraryBooks);
                     break;
-                    
-                case 3: // Search for Book
+                /**
+                 * Search for books by calling searchBooks() and
+                 * passing the returned List to viewBooks().
+                 */    
+                case 3:
                     List<Book> bookSearchResults = library.searchBooks();
                     library.viewBooks(bookSearchResults);
                     break;
-                    
-                case 4: // Add new Member
+                /**
+                 * Add new members by creating a new Member and passing it to
+                 * the addMember() method.
+                 */    
+                case 4: 
                     Member newMember = new Member();
                     library.addMember(newMember);
                     break;
-                    
-                case 5: // View All Members
+
+                // View all Members by passing libraryMembers to viewMembers().
+                case 5: 
                     library.viewMembers(library.libraryMembers);
                     break;
-                    
-                case 6: // Search for Members
+                /**
+                 * Search for Members by calling searchMembers() and passing
+                 * the returned List to viewBooks().
+                 */    
+                case 6: 
                     List<Member> memberSearchResults = library.searchMembers();
                     library.viewMembers(memberSearchResults);
                     break;
-                    
-                case 7: // Checkout Book
+
+                //Checkout books by calling checkOut() method.
+                case 7:
                     library.checkOut();
                     break;
-                    
-                case 8: // Checkin Book
+
+                //Checkin books by calling checkIn() method. 
+                case 8:
                     library.checkIn();
                     break;
             }
-        } while (choice != 0);
+        } while (choice != 0);// Program exit condition
     }
     
+    /**
+     * Method prints the navigation menu.
+     */
     public static void showMenu(){
         
         System.out.println("""
