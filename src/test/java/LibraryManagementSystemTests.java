@@ -7,6 +7,6 @@
  *
  * @author brdde
  */
-public class Tests {
-
+public class LibraryManagementSystemTests {
+    
 }

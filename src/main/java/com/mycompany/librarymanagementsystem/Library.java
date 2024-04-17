@@ -46,7 +46,7 @@ public class Library {
             libraryBooks.add(newBook);
             System.out.println(
                     "\n--- Book Successfully Added to Library ---\n"
-            );
+            );         
         } else {
             System.out.println(
                     "\nA book with ISBN #" + newBook.ISBN
@@ -100,7 +100,7 @@ public class Library {
                 long ISBN = results.get(i).ISBN;
                 String title = results.get(i).title;
                 String author = results.get(i).author;
-                String isAvailible = results.get(i).isAvailible
+                String isAvailible = results.get(i).isAvailable
                         ? "Yes"
                         : "No";
 
@@ -583,10 +583,16 @@ public class Library {
              * the book be checked out. This is done by setting isAvailable to
              * false, and adding the book the the member's borrowedBooks list.
              */
-            if (isBook && matchedBook.isAvailible) {
+            if (isBook && matchedBook.isAvailable) {
 
-                matchedBook.isAvailible = false;
+                matchedBook.isAvailable = false;
                 matchedMember.borrowedBooks.add(matchedBook);
+                
+                // Assertions for testing
+                assert matchedBook.isAvailable == true 
+                        : "Assertion Error: Book's availability was not set to false";
+                assert matchedMember.borrowedBooks.get(0) != matchedBook 
+                        : "Assertion Error: Book was not added to Member's borrowedBooks";
 
                 System.out.println("\nBook \"" + matchedBook.title
                         + "\" has successfully been checked out by Member \""
@@ -594,7 +600,7 @@ public class Library {
                         + "\n---- Checkout Complete ----\n");
 
                 // if the book exists but isn't available, checkout is aborted.    
-            } else if (isBook && matchedBook.isAvailible == false) {
+            } else if (isBook && matchedBook.isAvailable == false) {
 
                 System.out.println("\nBook \"" + matchedBook.title
                         + "\" is not availible for Check Out. "
@@ -720,8 +726,14 @@ public class Library {
              */
             if (isBook && isBorrowed) {
 
-                matchedBook.isAvailible = true;
+                matchedBook.isAvailable = true;
                 matchedMember.borrowedBooks.remove(matchedBook);
+                
+                //Assertions for testing
+                assert matchedBook.isAvailable == false
+                        : "Assertion Error: Book's availability was set not set to true";
+                assert matchedMember.borrowedBooks.get(0) != matchedBook 
+                        : "Assertion Error: Book was not added to member's borrowedBooks";
 
                 System.out.println("\nBook \"" + matchedBook.title
                         + "\" has successfully been checked in by Member \""

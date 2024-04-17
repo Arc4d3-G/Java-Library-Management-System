@@ -92,21 +92,26 @@ The program consists of a main class (LibraryManagementSystem.java), and 3 class
 ### showMenu()
 - Simply prints the string displaying the navigation menu options.
 
+### promptForNewBook()
+- This function houses all the input prompts and validation for creating a new Book.
+- Once validated, the input is used in the Book() constructor methed, which is then returned by the function.
+
+### promptForNewMember()
+- Similarly, it houses input prompts and validation for new Members, and returns the object. 
+
 ## Book.java
 Class has 4 public properties, namely: long ISBN, String title, String author, and boolean isAvailable.
 
 ### Book()
 - Constructor method for new Book objects.
-- The constructor contains all the input validation for defining each property. This is done so that no Book object can be instantiated with incomplete or broken data.
-- If the input does not meet the requirements of the validation loop for each property, an exception will be thrown explaining to the user why the input is invalid, and re-prompting until valid.
-- Main menu Option 1 is responsible for creating new book objects and passing them as parameters to the library class "addBook" method.
+- Main menu Option 1 is responsible for creating new book objects via promptForNewBook() and passing the returned Book as a parameter to library.addBook() method.
 
 ## Member.java
 Class has 3 public properties, namely: String name, String email, and List borrowedBooks.
 
 ### Member()
 - Constructor method for new Member objects.
-- Similar to Book() constructor containing validation loops for each property.
+- Similar to the new Book() constructor, Main menu Option 4 is responsible for creating a new Member and passing it to the library.addMember() method.
 
 ## Library.java
 Class is responsible for storing and manipulating Book and Member objects, and contains two properties, namely: List libraryBooks & List libraryMembers.
@@ -146,5 +151,3 @@ Class is responsible for storing and manipulating Book and Member objects, and c
 - This method is structurally similar to checkOut()
 - The key difference is that in order for a book to be returned, the member returning it has to be the same one that borrowed it. 
 - IF everything is in order, the book is removed from the member's borrowedBooks, and its availability is set to true.
-
-# 
