@@ -28,8 +28,8 @@ public class Library {
 
         boolean alreadyAdded = false;
         /**
-         * Loop through to check if a book with an identical ISBN already exists
-         * in the library.
+         * Loop to check if a book with an identical ISBN already exists in the
+         * library.
          */
         for (int i = 0; i < libraryBooks.size(); i++) {
             if (newBook.ISBN == libraryBooks.get(i).ISBN) {
@@ -39,14 +39,18 @@ public class Library {
         }
 
         /**
-         * If no match is found, the book will be added to the library, else
-         * a message is printed stating that the book already exists.
+         * If no match is found, the book will be added to the library, else a
+         * message is printed stating that the book already exists.
          */
         if (alreadyAdded == false) {
             libraryBooks.add(newBook);
             System.out.println(
                     "\n--- Book Successfully Added to Library ---\n"
-            );         
+            );
+
+            // Assertion for testing
+            assert libraryBooks.get(libraryBooks.size() - 1) == newBook : "Assertion Error: NewBook was not added.";
+
         } else {
             System.out.println(
                     "\nA book with ISBN #" + newBook.ISBN
@@ -92,17 +96,16 @@ public class Library {
             );
 
             /**
-             * For loop to print a formatted string containing book info for
-             * each Book in our parameter list object.
+             * Loop to print a formatted string containing book info for each
+             * Book in our parameter list object.
              */
             for (int i = 0; i < results.size(); i++) {
 
-                long ISBN = results.get(i).ISBN;
-                String title = results.get(i).title;
-                String author = results.get(i).author;
-                String isAvailible = results.get(i).isAvailable
-                        ? "Yes"
-                        : "No";
+                Book book = results.get(i);
+                long ISBN = book.ISBN;
+                String title = book.title;
+                String author = book.author;
+                String isAvailible = book.isAvailable ? "Yes" : "No";
 
                 System.out.printf(
                         "%-16s %-25s %-40s %-10s \n",
@@ -117,9 +120,7 @@ public class Library {
         } else {
             System.out.println("No Results Found.\n");
         }
-
         System.out.println("--- End of List ---\n");
-
     }
 
     /**
@@ -152,6 +153,10 @@ public class Library {
             System.out.println(
                     "\n--- Member Successfully Registered ---\n"
             );
+
+            // Assertion for testing
+            assert libraryMembers.get(libraryMembers.size() - 1) == newMember : "Assertion Error: NewMember was not added.";
+
         } else {
             System.out.println(
                     "\nA member with Email Address \"" + newMember.email
@@ -187,10 +192,7 @@ public class Library {
              * followed by a digit representing the width, and finally "s" to
              * indicate we're formatting a string.
              */
-            System.out.println(
-                    "-----------------------------------------------"
-                    + "------------------------------------------------"
-            );
+
             System.out.printf(
                     "%-30s %-30s %-100s \n",
                     "NAME", "EMAIL", "CURRENT BOOKS CHECKED OUT"
@@ -234,247 +236,89 @@ public class Library {
     }
 
     /**
-     * Method used to initiate a book search. The user is prompted to specify
-     * wether the search is by author or title, which is then validated, and
-     * then appropriate switch case is used to prompt the user for the search
-     * keyword/s. Once validated the keyword is used to see if any of the
-     * library books match. The matching books are added to a searchResults list
-     * which is then returned by the method for {@link #viewMembers} to use.
+     * Method searches through libraryBooks for any elements containing the
+     * search keyword. The parameter searchParams provides the book property to
+     * search by, and the keyword provided by the user.
      *
-     * @return searchResults - A list object containing all matching books.
+     * @param searchParam - first element should be either "title" or "author".
+     * Second element should be a the user provided keyword.
+     * @return searchResults - List containing all matching Books. Can be empty
+     * if no matches.
      */
-    public List<Book> searchBooks() {
+    public List<Book> searchBooks(String[] searchParam) {
 
         // New object to be populated and returned by method.
         List<Book> searchResults = new ArrayList<>();
-        int choice;
-        
-        System.out.println("""
-                               --- Search for Books ---
-                           
-                               Would you like to search by Author or Title?
-                               
-                               1. Title
-                               2. Author
-                               """);
 
-        // Input validation loop
-        while (true) {
-
-            System.out.print("Option: ");
-
-            try {
-                choice = Integer.parseInt(scan.nextLine());
-                if (choice > 2 || choice < 0) {
-                    throw new Exception();
-                }
-                break;
-            } catch (Exception e) {
-                System.out.println(
-                        "Invalid Choice. Please input a valid digit (1 or 2)."
-                );
-            }
-        }
-
-        // Switch case which prompts for the appropriate search and validates input
-        switch (choice) {
-
-            case 1: // Search by title
-                String searchTitle;
-
-                while (true) {
-
-                    System.out.print("Enter Book Title: ");
-
-                    // Input validation loop
-                    try {
-                        String input = scan.nextLine();
-
-                        if (input.length() > 0) {
-                            searchTitle = input;
-                            break;
-                        } else {
-                            throw new Exception();
-                        }
-                    } catch (Exception e) {
-                        System.out.println(
-                                "Invalid Title. Please ensure the Title is not empty."
-                        );
-                    }
-                }
-
+        switch (searchParam[0]) {
+            case "title" -> {
                 /**
-                 * Loop through each book in libraryBooks and check if
-                 * it's title contains the searchTitle string. We use .toLowerCase
-                 * to ensure the search is case insensitive. Matches are added
-                 * to the searchResults list.
+                 * Loop through each book in libraryBooks and check if it's
+                 * title contains the searchTitle string. We use .toLowerCase to
+                 * ensure the search is case insensitive. Matches are added to
+                 * the searchResults list.
                  */
                 for (int i = 0; i < libraryBooks.size(); i++) {
-                    if (libraryBooks.get(i).title.toLowerCase().contains(searchTitle)) {
+                    if (libraryBooks.get(i).title.toLowerCase().contains(searchParam[1].toLowerCase())) {
                         searchResults.add(libraryBooks.get(i));
                     }
                 }
+            }
 
-                break;
-
-            case 2: // Search by author
-                String searchAuthor;
-
-                // Input validation loop
-                while (true) {
-
-                    System.out.print("Enter Book Author: ");
-
-                    try {
-                        String input = scan.nextLine();
-
-                        if (input.length() > 0) {
-                            searchAuthor = input;
-                            break;
-                        } else {
-                            throw new Exception();
-                        }
-                    } catch (Exception e) {
-                        System.out.println(
-                                "Invalid Author. Please ensure the Author is not empty."
-                        );
-                    }
-                }
-
+            case "author" -> {
                 /**
                  * Similar to case 1 loop, but matches by author instead.
                  */
                 for (int i = 0; i < libraryBooks.size(); i++) {
-                    if (libraryBooks.get(i).author.toLowerCase().contains(searchAuthor)) {
+                    if (libraryBooks.get(i).author.toLowerCase().contains(searchParam[1].toLowerCase())) {
                         searchResults.add(libraryBooks.get(i));
                     }
                 }
-                break;
+            }
         }
         return searchResults;
     }
 
     /**
-     * Method used to initiate a member search. The user is prompted to specify
-     * wether the search is by name or email, which is then validated, and then
-     * appropriate switch case is used to prompt the user for the search
-     * keyword/s. Once validated the keyword is used to see if any of the
-     * library members match. The matching members are added to a searchResults
-     * list which is then returned by the method for {@link #viewMembers} to
-     * use.
+     * Similar to searchBooks(), but for searching members instead.
      *
-     * @return searchResults - A list object containing all matching members.
+     * @param searchParam - first element should be either "name" or "email".
+     * Second element should be a the user provided keyword.
+     * @return searchResults - List containing all matching members. Can be
+     * empty if no matches.
      */
-    public List<Member> searchMembers() {
+    public List<Member> searchMembers(String[] searchParam) {
 
         // New object to be populated and returned by method.
         List<Member> searchResults = new ArrayList<>();
-        int choice;
-        System.out.println("""
-                               --- Search for Members ---
-                           
-                               Would you like to search by Name or Email?
-                               
-                               1. Name
-                               2. Email
-                               """);
 
-        // Input validation loop
-        while (true) {
-
-            System.out.print("Option: ");
-
-            try {
-                choice = Integer.parseInt(scan.nextLine());
-                if (choice > 2 || choice < 0) {
-                    throw new Exception();
-                }
-                break;
-            } catch (Exception e) {
-                System.out.println(
-                        "Invalid Choice. Please input a valid digit (1 or 2)."
-                );
-            }
-        }
-
-        // Switch case which prompts for the appropriate search and validates input
-        switch (choice) {
-
-            case 1: // Search by Name
-                String searchName;
-
-                // Input validation loop
-                while (true) {
-
-                    System.out.print("Enter Member Name: ");
-
-                    try {
-                        String input = scan.nextLine();
-
-                        if (input.length() > 0) {
-                            searchName = input;
-                            break;
-                        } else {
-                            throw new Exception();
-                        }
-                    } catch (Exception e) {
-                        System.out.println(
-                                "Invalid Name. Please ensure the Name is not empty."
-                        );
-                    }
-                }
-
+        switch (searchParam[0]) {
+            case "name" -> {
                 /**
-                 * Loop through each member in libraryMembers and check if
-                 * its name contains the searchName string. We use .toLowerCase()
-                 * to ensure the search is case insensitive. Matches are added
-                 * to the searchResults list.
+                 * Loop through each member in libraryMembers and check if its
+                 * name contains the searchName string. We use .toLowerCase() to
+                 * ensure the search is case insensitive. Matches are added to
+                 * the searchResults list.
                  */
                 for (int i = 0; i < libraryMembers.size(); i++) {
-                    if (libraryMembers.get(i).name.toLowerCase().contains(searchName)) {
+                    if (libraryMembers.get(i).name.toLowerCase().contains(searchParam[1].toLowerCase())) {
                         searchResults.add(libraryMembers.get(i));
                     }
                 }
+            }
 
-                break;
-
-            case 2: // Search by author
-                String searchEmail;
-
-                // Input validation using regex. 
-                while (true) {
-
-                    System.out.print("Enter Member Email: ");
-
-                    try {
-                        String input = scan.nextLine();
-                        String regex = "^(.+)@(.+)$";
-                        Pattern pattern = Pattern.compile(regex);
-                        Matcher matcher = pattern.matcher(input);
-                        if (matcher.matches()) {
-                            searchEmail = input;
-                            break;
-                        } else {
-                            throw new Exception();
-                        }
-                    } catch (Exception e) {
-                        System.out.println(
-                                "Invalid Email. Please ensure the email is a"
-                                + " valid email address."
-                        );
-                    }
-                }
-
+            case "email" -> {
                 /**
                  * Similar to case 1 loop, but matches by email instead.
                  */
                 for (int i = 0; i < libraryMembers.size(); i++) {
-                    if (libraryMembers.get(i).email.toLowerCase().contains(searchEmail)) {
+                    if (libraryMembers.get(i).email.toLowerCase().contains(searchParam[1].toLowerCase())) {
                         searchResults.add(libraryMembers.get(i));
                     }
                 }
-                break;
+            }
         }
+
         return searchResults;
     }
 
@@ -587,12 +431,10 @@ public class Library {
 
                 matchedBook.isAvailable = false;
                 matchedMember.borrowedBooks.add(matchedBook);
-                
+
                 // Assertions for testing
-                assert matchedBook.isAvailable == true 
-                        : "Assertion Error: Book's availability was not set to false";
-                assert matchedMember.borrowedBooks.get(0) != matchedBook 
-                        : "Assertion Error: Book was not added to Member's borrowedBooks";
+                assert matchedBook.isAvailable == false : "Assertion Error: Book's availability was not set to false";
+                assert matchedMember.borrowedBooks.get(matchedMember.borrowedBooks.size() - 1) == matchedBook : "Assertion Error: Book was not added to Member's borrowedBooks";
 
                 System.out.println("\nBook \"" + matchedBook.title
                         + "\" has successfully been checked out by Member \""
@@ -728,12 +570,11 @@ public class Library {
 
                 matchedBook.isAvailable = true;
                 matchedMember.borrowedBooks.remove(matchedBook);
-                
+
                 //Assertions for testing
-                assert matchedBook.isAvailable == false
-                        : "Assertion Error: Book's availability was set not set to true";
-                assert matchedMember.borrowedBooks.get(0) != matchedBook 
-                        : "Assertion Error: Book was not added to member's borrowedBooks";
+                assert matchedBook.isAvailable == true : "Assertion Error: Book's availability was set not set to true";
+                assert matchedMember.borrowedBooks
+                        .get(matchedMember.borrowedBooks.size() - 1) != matchedBook : "Assertion Error: Book was not added to member's borrowedBooks";
 
                 System.out.println("\nBook \"" + matchedBook.title
                         + "\" has successfully been checked in by Member \""

@@ -16,7 +16,7 @@ public class Member {
 
     /**
      * Constructor method for new Book object.
-     * 
+     *
      * @param name - String - Member full or partial Name
      * @param email - String - Member email address
      */

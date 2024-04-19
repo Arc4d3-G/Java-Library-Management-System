@@ -57,7 +57,6 @@ public class LibraryManagementSystem {
                     );
                 }
             }
-            
 
             /**
              * Switch statement with corresponding menu choice procedures. See
@@ -74,8 +73,6 @@ public class LibraryManagementSystem {
                 case 1 -> {
                     Book newBook = promptForNewBook();
                     library.addBook(newBook);
-                    assert library.libraryBooks.get(0) == newBook 
-                            : "Assertion Error: NewBook was not added.";
                 }
 
                 // View all books by passing libraryBooks to viewBooks() method.
@@ -83,25 +80,29 @@ public class LibraryManagementSystem {
                     library.viewBooks(library.libraryBooks);
 
                 /**
-                 * Search for books by calling searchBooks() and passing the
-                 * returned List to viewBooks().
+                 * Search for books by calling promtForBookSearch(), which
+                 * returns an array of 2 strings (first indicates if search is
+                 * by title or author, the second is the keyword to search
+                 * with). We then pass this array as a parameter for our
+                 * searchBooks() method, which in turn returns a list of Books
+                 * that matched the search parameters, which is then finally
+                 * passed to viewBooks() to display.
                  */
                 case 3 -> {
-                    List<Book> bookSearchResults = library.searchBooks();
+                    List<Book> bookSearchResults = library.searchBooks(promptForBookSearch());
                     library.viewBooks(bookSearchResults);
                 }
 
                 /**
-                 * Add new books to the library by calling promptForNewMember() 
-                 * to prompt the user for Member info, validate it, and the pass it
-                 * on to the Member() constructor. We then pass the new Member to
-                 * the addMember() method in our library.
+                 * Add new books to the library by calling promptForNewMember()
+                 * to prompt the user for Member info, validate it, and the pass
+                 * it on to the Member() constructor. We then pass the new
+                 * Member to the addMember() method in our library.
                  */
                 case 4 -> {
                     Member newMember = promptForNewMember();
                     library.addMember(newMember);
-                    assert library.libraryMembers.get(0) == newMember 
-                            : "Assertion Error: newMember was not added.";
+                    assert library.libraryMembers.get(0) == newMember : "Assertion Error: newMember was not added.";
                 }
 
                 // View all Members by passing libraryMembers to viewMembers().
@@ -109,18 +110,18 @@ public class LibraryManagementSystem {
                     library.viewMembers(library.libraryMembers);
 
                 /**
-                 * Search for Members by calling searchMembers() and passing the
-                 * returned List to viewBooks().
+                 * Similar to case 3 (search for books), but for searching
+                 * members.4
+                 *
                  */
                 case 6 -> {
-                    List<Member> memberSearchResults = library.searchMembers();
+                    List<Member> memberSearchResults = library.searchMembers(promptForMemberSearch());
                     library.viewMembers(memberSearchResults);
                 }
 
                 //Checkout books by calling checkOut() method.
                 case 7 ->
                     library.checkOut();
-                    
 
                 //Checkin books by calling checkIn() method.
                 case 8 ->
@@ -282,10 +283,10 @@ public class LibraryManagementSystem {
     }
 
     /**
-     * Prompts and validates user input to set the property values of a new Member
-     * object. The values are then passed to the Member() constructor and the new
-     * Member is returned by this function.
-     * 
+     * Prompts and validates user input to set the property values of a new
+     * Member object. The values are then passed to the Member() constructor and
+     * the new Member is returned by this function.
+     *
      * @return Member - new Member - A newly constructed Member
      */
     public static Member promptForNewMember() {
@@ -355,4 +356,207 @@ public class LibraryManagementSystem {
         return newMember;
     }
 
+    /**
+     * Prompts and validates user input for a book search. First we determine if
+     * the search is by book title or author, and then we use a switch case to
+     * prompt for the search keyword. Finally, both the search option and
+     * keyword are placed in an array which is returned for searchBooks() to
+     * use.
+     *
+     * @return searchParam[] - First element indicates if search is by title or
+     * author, second element is the keyword provided by the user.
+     */
+    public static String[] promptForBookSearch() {
+
+        Scanner scan = new Scanner(System.in);
+        String[] searchParam = new String[2];
+        int choice;
+
+        System.out.println("""
+                               --- Search for Books ---
+                           
+                               Would you like to search by Author or Title?
+                               
+                               1. Title
+                               2. Author
+                               """);
+
+        // Input validation loop
+        while (true) {
+
+            System.out.print("Option: ");
+
+            try {
+                choice = Integer.parseInt(scan.nextLine());
+                if (choice > 2 || choice < 0) {
+                    throw new Exception();
+                }
+                break;
+            } catch (Exception e) {
+                System.out.println(
+                        "Invalid Choice. Please input a valid digit (1 or 2)."
+                );
+            }
+        }
+
+        // Switch case which prompts for the appropriate search and validates input
+        switch (choice) {
+
+            case 1 -> {
+                // Search by title
+                searchParam[0] = "title";
+
+                while (true) {
+
+                    System.out.print("Enter Book Title: ");
+
+                    // Input validation loop
+                    try {
+                        String input = scan.nextLine();
+
+                        if (input.length() > 0) {
+                            searchParam[1] = input;
+                            break;
+                        } else {
+                            throw new Exception();
+                        }
+                    } catch (Exception e) {
+                        System.out.println(
+                                "Invalid Title. Please ensure the Title is not empty."
+                        );
+                    }
+                }
+            }
+
+            case 2 -> {
+                // Search by author
+                searchParam[0] = "author";
+
+                // Input validation loop
+                while (true) {
+
+                    System.out.print("Enter Book Author: ");
+
+                    try {
+                        String input = scan.nextLine();
+
+                        if (input.length() > 0) {
+                            searchParam[1] = input;
+                            break;
+                        } else {
+                            throw new Exception();
+                        }
+                    } catch (Exception e) {
+                        System.out.println(
+                                "Invalid Author. Please ensure the Author is not empty."
+                        );
+                    }
+                }
+            }
+
+        }
+
+        return searchParam;
+    }
+
+    /**
+     * Similar to promptForBookSearch(), but prompts for member search key
+     * instead.
+     *
+     * @return searchParam[] - First element indicates if search is by name or
+     * email, second element is the keyword provided by the user.
+     */
+    public static String[] promptForMemberSearch() {
+
+        Scanner scan = new Scanner(System.in);
+        String[] searchParam = new String[2];
+        int choice;
+
+        System.out.println("""
+                               --- Search for Members ---
+                           
+                               Would you like to search by Name or Email?
+                               
+                               1. Name
+                               2. Email
+                               """);
+
+        // Input validation loop
+        while (true) {
+
+            System.out.print("Option: ");
+
+            try {
+                choice = Integer.parseInt(scan.nextLine());
+                if (choice > 2 || choice < 0) {
+                    throw new Exception();
+                }
+                break;
+            } catch (Exception e) {
+                System.out.println(
+                        "Invalid Choice. Please input a valid digit (1 or 2)."
+                );
+            }
+        }
+
+        // Switch case which prompts for the appropriate search and validates input
+        switch (choice) {
+
+            case 1 -> {
+                // Search by Name
+                searchParam[0] = "name";
+
+                // Input validation loop
+                while (true) {
+
+                    System.out.print("Enter Member Name: ");
+
+                    try {
+                        String input = scan.nextLine();
+
+                        if (input.length() > 0) {
+                            searchParam[1] = input;
+                            break;
+                        } else {
+                            throw new Exception();
+                        }
+                    } catch (Exception e) {
+                        System.out.println(
+                                "Invalid Name. Please ensure the Name is not empty."
+                        );
+                    }
+                }
+            }
+
+            case 2 -> {
+                // Search by email
+                searchParam[0] = "email";
+
+                // Input validation using regex. 
+                while (true) {
+
+                    System.out.print("Enter Member Email: ");
+
+                    try {
+                        String input = scan.nextLine();
+                        Pattern pattern = Pattern.compile("^(.+)@(.+)$");
+                        Matcher matcher = pattern.matcher(input);
+                        if (matcher.matches()) {
+                            String searchEmail = input;
+                            searchParam[1] = searchEmail;
+                            break;
+                        } else {
+                            throw new Exception();
+                        }
+                    } catch (Exception e) {
+                        System.out.println(
+                                "Invalid Email. Please ensure the email is a"
+                                + " valid email address."
+                        );
+                    }
+                }
+            }
+        }
+        return searchParam;
+    }
 }

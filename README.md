@@ -8,8 +8,8 @@ This is a CLI app written in Java for a school project. It's primary purpose is 
 - Add new members to the library records by providing the member's name and Email.
 - View all recorded books & registered members in an easy to understand table format.
 - Check in/out books by associating the book with a registered member, which is reflected in their record.
-- Search for recorded books by tile or author.
-- Search for recorded members by name or Email.
+- Search for recorded books by title or author.
+- Search for recorded members by name or email.
 
 # How to Use
 
@@ -38,7 +38,7 @@ Navigation in the app is handled by a simple numeric menu system. Input the corr
 
 1. Input "3" to start a new search.
 2. The user will be prompted to specify wether the search will be by title or author. Input either "1" or "2" to proceed.
-3. Proceed to enter the search keyword. Note that the key is not case sensitive, and can contain the entire or partial title/author name in order to match. 
+3. Proceed to enter the search keyword. Note that the key is not case sensitive, and can contain the entire or partial title/author name. 
 4. If any matches are found, their details will be displayed similar to Option 2's book table.
 5. If no matches are found, a message will be printed stating so.
 
@@ -59,7 +59,7 @@ Navigation in the app is handled by a simple numeric menu system. Input the corr
 
 1. Input "6" to start a new search.
 2. The user will be prompted to specify wether the search will be by Name or Email. Input either "1" or "2" to proceed.
-3. Proceed to enter the search keyword. Note that the key is not case sensitive, and may contain the entire or partial name/email name in order to match. 
+3. Proceed to enter the search keyword. Note that the key is not case sensitive, and may contain the entire or partial name/email name. 
 4. If any matches are found, their details will be displayed similar to Option 5's member table.
 5. If no matches are found, a message will be printed stating so.
 
@@ -74,12 +74,17 @@ Navigation in the app is handled by a simple numeric menu system. Input the corr
 
 1. Input "8" to start the process.
 2. User will be prompted to provide the email of the member returning a book. Note that books cannot be returned if the member is not registered. 
-3. Next input the ISBN number of the book being returned. Note that checkout cannot complete if the book being returned is not associated with the member's record (i.e. the book was not checked out by this member, and thus they check it in).
+3. Next input the ISBN number of the book being returned. Note that checkout cannot complete if the book being returned is not associated with the member's record (i.e. the book was not checked out by this member, and thus they can't return it).
 
 
 # How it works
 
-The program consists of a main class (LibraryManagementSystem.java), and 3 class files. Namely: Book.java, Member.java, and Library.java.
+The program consists of a main class (LibraryManagementSystem.java), 3 class files, namely: 
+- Book.java 
+- Member.java 
+- Library.java
+
+Additionally there is a unit test class containg a few unit tests for the Library class (LibraryTests.java)
 
 ## LibraManagementSystem.java
 
@@ -98,6 +103,13 @@ The program consists of a main class (LibraryManagementSystem.java), and 3 class
 
 ### promptForNewMember()
 - Similarly, it houses input prompts and validation for new Members, and returns the object. 
+
+### promptForBookSearch()
+- This function houses all the input prompts and validation for initiating a new Book search.
+- It returns a string array containing the type of search (title or author), and the user provided keyword.
+
+### promptForMemberSearch()
+- Similarly, it houses input and validation for initiating a new Member search.
 
 ## Book.java
 Class has 4 public properties, namely: long ISBN, String title, String author, and boolean isAvailable.
@@ -130,19 +142,19 @@ Class is responsible for storing and manipulating Book and Member objects, and c
 ### viewMembers() 
 - Similar to viewBooks(), prints a table displaying either all members or from the member search, depending on the parameter passed.
 
-### List<Book> searchBooks()
-- This method returns a new list of books.
-- It populates this new list by taking the user provided search key (either author or title, which is validated first) and comparing it to all the elements in libraryBooks (using equalsIgnoreCase() to ensure it's case insensitive).
+### List<Book> searchBooks(String[] searchParam)
+- This method returns a new list of books which match the search parameters.
+- It populates this new list by taking the user provided search key and comparing it to all the elements in libraryBooks (using equalsIgnoreCase() to ensure its case insensitive).
 - If a match is found, the matching element is added to the new searchResults list.
 - There's two different search loops in a switch statement for either title or author search.
 
-### List<Member> searchMembers()
-- This method returns a new list of members.
+### List<Member> searchMembers(String[] searchParam)
+- Similarly, this method returns a new list of members which match the search parameters.
 - Similar to searchBooks(), it takes a search key (either name or email) and loops through libraryMembers, adding matches to the returned searchResults.
 
 ### checkOut()
 - This method has a dual purpose, as it's responsible for changing a book's "isAvailable" value to false, but it also attaches the checked out book to the member's "borrowedBooks" list to keep track of who is borrowing what.
-- In order for a book to be checked out, user is first prompted for a registered member's email (the member that's borrowing the book). If the user is not registered, the process is aborted.
+- In order for a book to be checked out, user is first prompted for a registered member's email (the member that's borrowing the book). If the member is not registered, the process is aborted.
 - Next it prompts for the book's ISBN number. Again if the book does not exists, checkout is aborted.
 - At this point, if both the member and book exists, we check if the book is indeed currently available, if not we abort.
 - Finally, if the book is available and everything else is valid, then the book is added to the member's borrowedBooks list and the book's isAvailable is set to false.
@@ -151,3 +163,6 @@ Class is responsible for storing and manipulating Book and Member objects, and c
 - This method is structurally similar to checkOut()
 - The key difference is that in order for a book to be returned, the member returning it has to be the same one that borrowed it. 
 - IF everything is in order, the book is removed from the member's borrowedBooks, and its availability is set to true.
+
+## LibraryTests.java
+Contains various unit tests and assertions for testing Library methods.
