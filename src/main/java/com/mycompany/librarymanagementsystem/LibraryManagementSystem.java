@@ -388,7 +388,7 @@ public class LibraryManagementSystem {
 
             try {
                 choice = Integer.parseInt(scan.nextLine());
-                if (choice > 2 || choice < 0) {
+                if (choice > 2 || choice <= 0) {
                     throw new Exception();
                 }
                 break;
@@ -488,7 +488,7 @@ public class LibraryManagementSystem {
 
             try {
                 choice = Integer.parseInt(scan.nextLine());
-                if (choice > 2 || choice < 0) {
+                if (choice > 2 || choice <= 0) {
                     throw new Exception();
                 }
                 break;
