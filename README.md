@@ -11,6 +11,23 @@ This is a CLI app written in Java for a school project. It's primary purpose is 
 - Search for recorded books by title or author.
 - Search for recorded members by name or email.
 
+## Objectives
+
+### Task 1: Implementing the Book and Member Classes
+- This project successfully implements Book and Member Classes with their relevant properties.
+
+### Task 2: Managing Collections
+- This project utilises collections for storing and managing Book and Member objects.
+
+### Task 3: Implementing Search Functionality
+- This project includes both a book and member search functionality by title/author or name/email.
+
+### Task 4: Handling Book Checkouts
+- This project has multiple exeption checks and assertions to ensure books cannot be checked out if the book is not availible.
+
+### Task 5: Assertions and Input Validation
+- This project utilised both regular expressions, exceptions and assertions to ensure all data input is valid.
+
 # How to Use
 
 Navigation in the app is handled by a simple numeric menu system. Input the corresponding number for each option listed in the menu to start the desired process.
