@@ -13,9 +13,10 @@ public class Book {
     public String title;
     public String author;
     public boolean isAvailable = true;
-    
+
     public LocalDate dueDate;
     public boolean isOverDue;
+    public Member borrowedByMember;
 
     /**
      * Constructor method for new Book object.
@@ -29,7 +30,5 @@ public class Book {
         this.ISBN = ISBN;
         this.title = title;
         this.author = author;
-
     }
-
 }

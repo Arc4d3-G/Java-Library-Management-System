@@ -1,5 +1,6 @@
 package com.mycompany.librarymanagementsystem;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -14,6 +15,7 @@ public class Library {
 
     public List<Book> libraryBooks = new ArrayList<>();
     public List<Member> libraryMembers = new ArrayList<>();
+    public int checkOutPeriod = 7;
 
     Scanner scan = new Scanner(System.in);
 
@@ -88,7 +90,7 @@ public class Library {
              */
             System.out.printf(
                     "%-16s %-25s %-40s %-10s \n",
-                    "ISBN", "Author", "Title", "Available?"
+                    "ISBN", "Author", "Title", "Status"
             );
             System.out.println(
                     "-----------------------------------------------"
@@ -105,7 +107,9 @@ public class Library {
                 long ISBN = book.ISBN;
                 String title = book.title;
                 String author = book.author;
-                String isAvailible = book.isAvailable ? "Yes" : "No";
+                String isAvailible = book.isAvailable
+                        ? "Availible"
+                        : "Checked out (Member: " + book.borrowedByMember.email + ", Due date: " + book.dueDate + ")";
 
                 System.out.printf(
                         "%-16s %-25s %-40s %-10s \n",
@@ -208,16 +212,19 @@ public class Library {
              */
             for (int i = 0; i < results.size(); i++) {
                 Member member = results.get(i);
+
                 boolean isBorrowing = !member.borrowedBooks.isEmpty();
 
                 System.out.printf("%-30s %-30s %-40s\n",
-                        member.name, member.email, isBorrowing ? member.borrowedBooks.get(0).title : "NONE");
+                        member.name, member.email, isBorrowing
+                                ? (member.borrowedBooks.get(0).title + " (Due " + member.borrowedBooks.get(0).dueDate + ")")
+                                : "NONE");
 
                 if (member.borrowedBooks.size() > 1) {
                     for (int j = 1; j < member.borrowedBooks.size(); j++) {
                         System.out.printf(
                                 "%-30s %-30s %-40s\n", " ", " ",
-                                member.borrowedBooks.get(j).title);
+                                member.borrowedBooks.get(j).title + " (Due " + member.borrowedBooks.get(j).dueDate + ")");
                     }
                 }
 
@@ -430,6 +437,8 @@ public class Library {
             if (isBook && matchedBook.isAvailable) {
 
                 matchedBook.isAvailable = false;
+                matchedBook.dueDate = LocalDate.now().plusDays(checkOutPeriod);
+                matchedBook.borrowedByMember = matchedMember;
                 matchedMember.borrowedBooks.add(matchedBook);
 
                 // Assertions for testing
@@ -563,18 +572,14 @@ public class Library {
             /**
              * Only if the book is registered and was checked out by the member
              * will the book be checked in. This is done by setting isAvailable
-             * to true, and removing the book the the member's borrowedBooks
+             * to true, and removing the book from the member's borrowedBooks
              * list.
              */
             if (isBook && isBorrowed) {
-
-                matchedBook.isAvailable = true;
                 matchedMember.borrowedBooks.remove(matchedBook);
-
-                //Assertions for testing
-                assert matchedBook.isAvailable == true : "Assertion Error: Book's availability was set not set to true";
-                assert matchedMember.borrowedBooks
-                        .get(matchedMember.borrowedBooks.size() - 1) != matchedBook : "Assertion Error: Book was not added to member's borrowedBooks";
+                matchedBook.isAvailable = true;
+                matchedBook.borrowedByMember = null;
+                matchedBook.dueDate = null;
 
                 System.out.println("\nBook \"" + matchedBook.title
                         + "\" has successfully been checked in by Member \""
