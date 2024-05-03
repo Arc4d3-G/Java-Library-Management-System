@@ -1,5 +1,6 @@
 package com.mycompany.librarymanagementsystem;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -12,6 +13,7 @@ import java.util.regex.Pattern;
 public class LibraryManagementSystem {
 
     public static void main(String[] args) {
+        
 
         // Intro image for fun :)
         String introMessage = """
@@ -28,8 +30,26 @@ public class LibraryManagementSystem {
         Scanner scan = new Scanner(System.in);
         // Choice used for switch case below
         int choice;
+        // used for sub-menu options
+        int option;
         // Instanciate a new Library object.
         Library library = new Library();
+        
+        Book book1 = new Book(1111111111111L, "The Fellowship of the Ring", "J.R. Tolkien");
+        Book book2 = new Book(222222222222L, "The Two Towers", "J.R. Tolkien");
+        Book book3 = new Book(33333333333L, "The Return of the King", "J.R. Tolkien");
+        Book book4 = new Book(4444444444L, "Moby Dick", "Herman Melville");
+        Book book5 = new Book(5555555555555L, "1984", "George Orwell");
+        Member member1 = new Member("Dewald Breed", "dewaldbreed@gmail.com");
+        Member member2 = new Member("Leandri Breed", "leandribreed@gmail.com");
+        Member member3 = new Member("Jade Hastings", "jadehastings@protonmail.com");
+        Member member4 = new Member("Steve", "steve@stevemail.co.za");
+
+        Book[] testingBooks = {book1, book2, book3, book4, book5};
+        Member[] testingMembers = {member1, member2, member3, member4};
+        
+        library.libraryBooks.addAll(Arrays.asList(testingBooks));
+        library.libraryMembers.addAll(Arrays.asList(testingMembers));
 
         /**
          * This loop continues to display the menu, prompting the user for an
@@ -47,13 +67,13 @@ public class LibraryManagementSystem {
 
                 try {
                     choice = Integer.parseInt(scan.nextLine());
-                    if (choice > 8 || choice < 0) {
+                    if (choice > 5 || choice < 0) {
                         throw new Exception();
                     }
                     break;
                 } catch (Exception e) {
                     System.out.println(
-                            "Invalid Choice. Please input a valid digit (0 to 8)"
+                            "Invalid Choice. Please input a valid digit (0 to 5)"
                     );
                 }
             }
@@ -64,71 +84,136 @@ public class LibraryManagementSystem {
              * each method.
              */
             switch (choice) {
-                /**
-                 * Add new books to the library by calling promptForNewBook() to
-                 * prompt the user for book info, validate it, and the pass it
-                 * on to the Book() constructor. We then pass the new book to
-                 * the addBook() method in our library.
-                 */
-                case 1 -> {
+
+                case 1 -> { // add book
                     Book newBook = promptForNewBook();
                     library.addBook(newBook);
                 }
 
-                // View all books by passing libraryBooks to viewBooks() method.
-                case 2 ->
-                    library.viewBooks(library.libraryBooks);
-
-                /**
-                 * Search for books by calling promtForBookSearch(), which
-                 * returns an array of 2 strings (first indicates if search is
-                 * by title or author, the second is the keyword to search
-                 * with). We then pass this array as a parameter for our
-                 * searchBooks() method, which in turn returns a list of Books
-                 * that matched the search parameters, which is then finally
-                 * passed to viewBooks() to display.
-                 */
-                case 3 -> {
-                    List<Book> bookSearchResults = library.searchBooks(promptForBookSearch());
-                    library.viewBooks(bookSearchResults);
-                }
-
-                /**
-                 * Add new books to the library by calling promptForNewMember()
-                 * to prompt the user for Member info, validate it, and the pass
-                 * it on to the Member() constructor. We then pass the new
-                 * Member to the addMember() method in our library.
-                 */
-                case 4 -> {
+                case 2 -> {//  add member
                     Member newMember = promptForNewMember();
                     library.addMember(newMember);
-                    assert library.libraryMembers.get(0) == newMember : "Assertion Error: newMember was not added.";
                 }
 
-                // View all Members by passing libraryMembers to viewMembers().
-                case 5 ->
-                    library.viewMembers(library.libraryMembers);
+                case 3 -> { // check in/out
+                    
+                    System.out.println("""
+                                       Would you like to check In or Out?
+                                       
+                                       0. Back to Menu
+                                       1. Check In
+                                       2. Check Out
+                                       
+                                       """);
+                    while (true) {
+                        System.out.print("Option: ");
 
-                /**
-                 * Similar to case 3 (search for books), but for searching
-                 * members.4
-                 *
-                 */
-                case 6 -> {
-                    List<Member> memberSearchResults = library.searchMembers(promptForMemberSearch());
-                    library.viewMembers(memberSearchResults);
+                        try {
+                            option = Integer.parseInt(scan.nextLine());
+                            if (option > 2 || option < 0) {
+                                throw new Exception();
+                            }
+                            break;
+                        } catch (Exception e) {
+                            System.out.println(
+                                    "Invalid Choice. Please input a valid digit (0 to 2)"
+                            );
+                        }
+                    }
+                    
+                    if (option == 1) {
+                       library.checkIn();
+                    }
+
+                    if (option == 2) {
+                        library.checkOut();
+                    }
+  
                 }
 
-                //Checkout books by calling checkOut() method.
-                case 7 ->
-                    library.checkOut();
+                case 4 -> { // View...
+                    System.out.println("""
+                                       What would you like to view?
+                                       
+                                       0. Back to Menu
+                                       1. View All Books
+                                       2. View All Members
+                                       3. View Due Dates
+                                       4. View Notification Log
+                                       
+                                       """);
+                    while (true) {
+                        System.out.print("Option: ");
 
-                //Checkin books by calling checkIn() method.
-                case 8 ->
-                    library.checkIn();
-            }
+                        try {
+                            option = Integer.parseInt(scan.nextLine());
+                            if (option > 4 || option < 0) {
+                                throw new Exception();
+                            }
+                            break;
+                        } catch (Exception e) {
+                            System.out.println(
+                                    "Invalid Choice. Please input a valid digit (0 to 4)"
+                            );
+                        }
+                    }
+                    
+                    if (option == 1) {
+                       library.viewBooks(library.libraryBooks);
+                    }
 
-        } while (choice != 0);// Program exit condition
+                    if (option == 2) {
+                        library.viewMembers(library.libraryMembers);
+                    }
+                    
+                    if (option == 3) {
+                        // vIEW OVERDUE BOOKS
+                    }
+                    
+                    if (option == 4) {
+                        // VIEW NOTIFICATION LOG
+                    }
+                    
+                    
+                }
+
+                case 5 -> { // search
+                    System.out.println("""
+                                       What would you like to search?
+                                       
+                                       0. Back to Menu
+                                       1. Search for Books
+                                       2. Search for Members
+
+                                       """);
+                    while (true) {
+                        System.out.print("Option: ");
+
+                        try {
+                            option = Integer.parseInt(scan.nextLine());
+                            if (option > 2 || option < 0) {
+                                throw new Exception();
+                            }
+                            break;
+                        } catch (Exception e) {
+                            System.out.println(
+                                    "Invalid Choice. Please input a valid digit (0 to 2)"
+                            );
+                        }
+                    }
+                    
+                    if (option == 1) {
+                       List<Book> bookSearchResults = library.searchBooks(promptForBookSearch());
+                        library.viewBooks(bookSearchResults); 
+                    }
+
+                    if (option == 2) {
+                        List<Member> memberSearchResults = library.searchMembers(promptForMemberSearch());
+                        library.viewMembers(memberSearchResults);
+                    }
+                }
+            } 
+        } while(choice != 0);
     }
 
     /**
@@ -137,17 +222,14 @@ public class LibraryManagementSystem {
     public static void showMenu() {
 
         System.out.println("""
-                           What Would You Like To Do?
+                           What Would You Like To Do?      No New Notificatons
                            -----------------------------------------------
                            Press 0 to Exit 
                            Press 1 to Add New Book 
-                           Press 2 to View All Books 
-                           Press 3 to Search For Book 
-                           Press 4 to Register New Member 
-                           Press 5 to View All Members 
-                           Press 6 to Search for Member
-                           Press 7 to Check Out Book 
-                           Press 8 to Check In Book 
+                           Press 2 to Register New Member
+                           Press 3 to Check Book In/out
+                           Press 4 to View...
+                           Press 5 to Search...
                            -----------------------------------------------""");
     }
 
@@ -166,7 +248,6 @@ public class LibraryManagementSystem {
         long ISBN;
         String title;
         String author;
-        boolean isAvailable;
 
         System.out.println("""
 
@@ -250,35 +331,7 @@ public class LibraryManagementSystem {
             }
         }
 
-        /**
-         * Validation loop with error handling for book isAvailible prop. User
-         * needs to input "Y"/"N" to set isAbailible to true/false.
-         */
-        while (true) {
-
-            System.out.print(
-                    "Is the Book currently availible for checkout? Y/N: "
-            );
-
-            try {
-                String input = scan.nextLine();
-
-                if ((input.toUpperCase()).equals("Y")) {
-                    isAvailable = true;
-                    break;
-                } else if ((input.toUpperCase()).equals("N")) {
-                    isAvailable = false;
-                    break;
-                } else {
-                    throw new Exception();
-                }
-            } catch (Exception e) {
-                System.out.println(
-                        "Invalid Input. Please enter either \"Y\" or \"N\"."
-                );
-            }
-        }
-        Book newBook = new Book(ISBN, title, author, isAvailable);
+        Book newBook = new Book(ISBN, title, author);
         return newBook;
     }
 

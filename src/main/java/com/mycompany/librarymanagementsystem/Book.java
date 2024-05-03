@@ -1,5 +1,7 @@
 package com.mycompany.librarymanagementsystem;
 
+import java.time.LocalDate;
+
 /**
  * Book class containing relevant public properties.
  *
@@ -10,7 +12,10 @@ public class Book {
     public long ISBN;
     public String title;
     public String author;
-    public boolean isAvailable;
+    public boolean isAvailable = true;
+    
+    public LocalDate dueDate;
+    public boolean isOverDue;
 
     /**
      * Constructor method for new Book object.
@@ -18,14 +23,13 @@ public class Book {
      * @param ISBN - 10-13 digit long number
      * @param title - String - Book title
      * @param author - String - Book author
-     * @param isAvailable - Boolean - Book's availability status
      */
-    public Book(long ISBN, String title, String author, boolean isAvailable) {
+    public Book(long ISBN, String title, String author) {
 
         this.ISBN = ISBN;
         this.title = title;
         this.author = author;
-        this.isAvailable = isAvailable;
+
     }
 
 }
