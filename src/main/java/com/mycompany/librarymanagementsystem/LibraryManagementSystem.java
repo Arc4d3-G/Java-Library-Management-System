@@ -1,7 +1,6 @@
 package com.mycompany.librarymanagementsystem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -30,24 +29,13 @@ public class LibraryManagementSystem {
         int choice;
         // used for sub-menu options
         int option;
-        // Instanciate a new Library object.
+
+        /**
+         * Create a new Library object and load books/members from the
+         * libraryData.json file
+         */
         Library library = new Library();
-
-        Book book1 = new Book(1111111111111L, "The Fellowship of the Ring", "J.R. Tolkien");
-        Book book2 = new Book(222222222222L, "The Two Towers", "J.R. Tolkien");
-        Book book3 = new Book(33333333333L, "The Return of the King", "J.R. Tolkien");
-        Book book4 = new Book(4444444444L, "Moby Dick", "Herman Melville");
-        Book book5 = new Book(5555555555555L, "1984", "George Orwell");
-        Member member1 = new Member("Dewald Breed", "dewaldbreed@gmail.com");
-        Member member2 = new Member("Leandri Breed", "leandribreed@gmail.com");
-        Member member3 = new Member("Jade Hastings", "jadehastings@protonmail.com");
-        Member member4 = new Member("Steve", "steve@stevemail.co.za");
-
-        Book[] testingBooks = {book1, book2, book3, book4, book5};
-        Member[] testingMembers = {member1, member2, member3, member4};
-
-        library.libraryBooks.addAll(Arrays.asList(testingBooks));
-        library.libraryMembers.addAll(Arrays.asList(testingMembers));
+        library.load();
 
         /**
          * This loop continues to display the menu, prompting the user for an
@@ -55,7 +43,10 @@ public class LibraryManagementSystem {
          * program ends.
          */
         do {
-            // Print the navigation menu at the start of each loop through.
+            // Write all books/members to libraryData.json 
+            library.save();
+
+            // Print the navigation menu
             showMenu();
 
             // Prompt and validate input before passing choice to the switch.

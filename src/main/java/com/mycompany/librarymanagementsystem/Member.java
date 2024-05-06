@@ -2,6 +2,9 @@ package com.mycompany.librarymanagementsystem;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 
 /**
  * Book class containing relevant public properties.
@@ -24,5 +27,28 @@ public class Member {
 
         this.name = name;
         this.email = email;
+    }
+    
+    /**
+     * Method creates a new JSONObject with each member property as
+     * a key:value pair.
+     * 
+     * @return JSONObject
+     */
+    public JSONObject toJSON(){
+        JSONObject memberObj = new JSONObject();
+        memberObj.put("name", name);
+        memberObj.put("email",email);
+        JSONArray borrowedBooksArr = new JSONArray();
+        if(!borrowedBooks.isEmpty()){
+            for(Book book : borrowedBooks){
+                borrowedBooksArr.add(book.ISBN);
+            }
+            memberObj.put("borrowedBooks", borrowedBooksArr);
+        } else {
+            memberObj.put("borrowedBooks", "none");
+        }
+
+        return memberObj;
     }
 }

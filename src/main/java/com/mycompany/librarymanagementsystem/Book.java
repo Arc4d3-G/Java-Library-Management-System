@@ -1,6 +1,7 @@
 package com.mycompany.librarymanagementsystem;
 
 import java.time.LocalDate;
+import org.json.simple.JSONObject;
 
 /**
  * Book class containing relevant public properties.
@@ -31,4 +32,24 @@ public class Book {
         this.title = title;
         this.author = author;
     }
+    
+    /**
+     * Method creates a new JSONObject with each book property as
+     * a key:value pair.
+     * 
+     * @return JSONObject
+     */
+    public JSONObject toJSON(){
+        JSONObject bookObj = new JSONObject();
+        bookObj.put("title", title);
+        bookObj.put("ISBN",ISBN);
+        bookObj.put("author", author);
+        bookObj.put("isAvailable", isAvailable);
+        bookObj.put("dueDate", dueDate != null ? dueDate.toString() : "none");
+        bookObj.put("isOverDue", isOverDue);
+        bookObj.put("borrowedByMember", borrowedByMember != null ? borrowedByMember.email : "none" );
+        
+        return bookObj;
+    }
+    
 }

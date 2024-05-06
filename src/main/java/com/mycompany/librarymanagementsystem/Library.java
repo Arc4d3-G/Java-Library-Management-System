@@ -1,11 +1,18 @@
 package com.mycompany.librarymanagementsystem;
 
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -157,9 +164,6 @@ public class Library {
             System.out.println(
                     "\n--- Member Successfully Registered ---\n"
             );
-
-            // Assertion for testing
-            assert libraryMembers.get(libraryMembers.size() - 1) == newMember : "Assertion Error: NewMember was not added.";
 
         } else {
             System.out.println(
@@ -604,6 +608,132 @@ public class Library {
         } else {
             System.out.println("\nNo Member with email \"" + searchEmail
                     + "\" was found. Checkout has been aborted.\n");
+        }
+    }
+
+    /**
+     * Function parses all libraryBooks and libraryMembers to Json writes it to
+     * libraryData.json.
+     */
+    public void save() {
+        try {
+            // Create a new JSONObject which will hold all our data as JSON.
+            JSONObject libraryData = new JSONObject();
+
+            // Add each book in libraryBooks to a JSONArray
+            JSONArray bookData = new JSONArray();
+            for (Book book : libraryBooks) {
+                bookData.add(book.toJSON());
+            }
+            //The array is then set as the value to the "Books" key
+            libraryData.put("Books", bookData);
+
+            // Add each member to a JSONArray as well
+            JSONArray memberData = new JSONArray();
+            for (Member member : libraryMembers) {
+                memberData.add(member.toJSON());
+            }
+            // Set the array to be the value for the "Members" key
+            libraryData.put("Members", memberData);
+
+            // Finally, write the JSONObject to the "libraryData.json" file
+            FileWriter file = new FileWriter("./libraryData.json");
+            file.write(libraryData.toJSONString());
+            file.flush();
+
+        } catch (IOException e) {
+            System.out.println("Something went wrong while attempting to write"
+                    + "the library data to libraryData.json.\n" + e.getMessage());
+        }
+    }
+
+    /**
+     * Function parses the Json text from libraryData.json back to JSONObjects,
+     * which is then used to re-construct all books/members and add them to the
+     * library.
+     */
+    public void load() {
+        try {
+            // Instanciate JSONParser and proceed to parse our libraryDate json file 
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(new FileReader("./libraryData.json"));
+            JSONObject libraryData = (JSONObject) obj;
+
+            /**
+             * Start by creating new Members from each object in the "Members"
+             * json array using the Member constructor, and adding them to the
+             * libraryMembers List.
+             */
+            JSONArray memberData = (JSONArray) libraryData.get("Members");
+            for (Object member : memberData) {
+                JSONObject memberObj = (JSONObject) member;
+
+                String name = (String) memberObj.get("name");
+                String email = (String) memberObj.get("email");
+
+                Member newMember = new Member(name, email);
+                libraryMembers.add(newMember);
+            }
+
+            /**
+             * Next we do the same for each book json object, converting string
+             * values back into their intended types.
+             */
+            JSONArray booksData = (JSONArray) libraryData.get("Books");
+            for (Object book : booksData) {
+                JSONObject bookObj = (JSONObject) book;
+
+                String title = (String) bookObj.get("title");
+                String author = (String) bookObj.get("author");
+                long ISBN = (long) bookObj.get("ISBN");
+                String borrowedByMember = (String) bookObj.get("borrowedByMember");
+                boolean isOverDue = (boolean) bookObj.get("isOverDue");
+                boolean isAvailable = (boolean) bookObj.get("isAvailable");
+                String dueDate = (String) bookObj.get("dueDate");
+
+                Book newBook = new Book(ISBN, title, author);
+                newBook.isOverDue = isOverDue;
+                newBook.isAvailable = isAvailable;
+
+                // Parse date string back to LocalDate if neccessary
+                if (dueDate.equals("none")) {
+                    newBook.dueDate = null;
+                } else {
+                    newBook.dueDate = LocalDate.parse(dueDate);
+                }
+
+                /**
+                 * Loop through members and assign the "borrowedByMember"
+                 * property to equal that member
+                 */
+                if (borrowedByMember != "none") {
+                    for (Member member : libraryMembers) {
+                        if (member.email.equals(borrowedByMember)) {
+                            newBook.borrowedByMember = member;
+                        }
+                    }
+                }
+                libraryBooks.add(newBook);
+            }
+
+            /**
+             * Lastly, now that we have out books and members added back to the
+             * library, we can add the books that are borrowed by a specific
+             * member back to the member's "borrowedBooks" property list.
+             */
+            for (Book book : libraryBooks) {
+                if (book.borrowedByMember != null) {
+                    for (Member member : libraryMembers) {
+                        if (book.borrowedByMember == member) {
+                            member.borrowedBooks.add(book);
+                        }
+                    }
+                }
+            }
+
+        } catch (IOException | ParseException e) {
+            System.out.println("Something went wrong trying to read/load the library"
+                    + "from the libraryData.json file.\n" + e.getMessage());
         }
     }
 }
