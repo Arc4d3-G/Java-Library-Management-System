@@ -1,6 +1,7 @@
 package com.mycompany.librarymanagementsystem;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import org.json.simple.JSONObject;
 
 /**
@@ -52,4 +53,19 @@ public class Book {
         return bookObj;
     }
     
+    public boolean checkIfOverDue(int checkOutPeriod) {
+        return dueDate != null && LocalDate.now().isAfter(dueDate);
+    }
+    
+    public long calcFees(int checkOutPeriod, int dayLateFee) {
+        if (isOverDue){
+            long daysLate = ChronoUnit.DAYS.between(dueDate, LocalDate.now());
+            long totalFee = dayLateFee * daysLate;
+            return totalFee;
+        } else {
+            return 0;
+        }
+        
+    }
+
 }

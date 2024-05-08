@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+
 /**
  *
  * @author brdde
@@ -11,6 +12,14 @@ import java.util.Scanner;
 public class LibraryManagementSystem {
 
     public static void main(String[] args) {
+        
+        /**
+         * Create a new Library object and load books/members from the
+         * libraryData.json file
+         */
+        Library library = new Library();
+
+        library.load();
 
         // Intro image for fun :)
         String introMessage = """
@@ -30,21 +39,18 @@ public class LibraryManagementSystem {
         // used for sub-menu options
         int option;
 
-        /**
-         * Create a new Library object and load books/members from the
-         * libraryData.json file
-         */
-        Library library = new Library();
-        library.load();
 
+        Thread dueDateProcessor = new Thread(new DueDateProcessor(library));
+        dueDateProcessor.start();
+
+//        Thread notificationProcessor = new Thread(new NotificationProcessor(library));
+//        notificationProcessor.start();
         /**
          * This loop continues to display the menu, prompting the user for an
          * option until "0" is input, at which point the loop exits and the
          * program ends.
          */
         do {
-            // Write all books/members to libraryData.json 
-            library.save();
 
             // Print the navigation menu
             showMenu();
@@ -212,7 +218,18 @@ public class LibraryManagementSystem {
                     }
                 }
             }
+            
+            // Write all books/members to libraryData.json 
+            library.save();
+            
         } while (choice != 0);
+        
+        // Close threads on exit
+        dueDateProcessor.interrupt();
+//        notificationProcessor.interrupt();
+
+        // Save on Exit
+        library.save();
     }
 
     /**
@@ -221,7 +238,7 @@ public class LibraryManagementSystem {
     public static void showMenu() {
 
         System.out.println("""
-                           What Would You Like To Do?      No New Notificatons
+                           What Would You Like To Do?
                            -----------------------------------------------
                            Press 0 to Exit 
                            Press 1 to Add New Book 
@@ -230,5 +247,65 @@ public class LibraryManagementSystem {
                            Press 4 to View...
                            Press 5 to Search...
                            -----------------------------------------------""");
+    }
+
+    static class DueDateProcessor implements Runnable {
+
+        private final Library library;
+        int checkOutPeriod;
+        int dayLateFee;
+
+        public DueDateProcessor(Library library) {
+            this.library = library;
+            this.checkOutPeriod = library.checkOutPeriod;
+            this.dayLateFee = library.dayLateFee;
+        }
+
+        @Override
+        public void run() {
+            try {
+                while (!Thread.interrupted()) {
+
+                    // Loop sets books to overdue
+                    for (Book book : library.libraryBooks) {
+                        book.isOverDue = book.checkIfOverDue(library.checkOutPeriod);
+                    }
+
+                    long totalOwed = 0;
+                    // Calculate the late fee for each borrowed book (if overdue) and set to member.feesOwed.
+                    for (Member member : library.libraryMembers) {
+                        for (Book book : member.borrowedBooks) {
+                            totalOwed += book.calcFees(checkOutPeriod, dayLateFee);
+                        }
+                        member.feesOwed = totalOwed;
+                    }
+                    Thread.sleep(60000);
+                }
+            } catch (Exception e) {
+                System.out.println("DueDateProcessor has encountered an interruption.\n" + e.getMessage());
+            }
+        }
+    }
+
+    static class NotificationProcessor implements Runnable {
+
+        private final Library library;
+
+        public NotificationProcessor(Library library) {
+            this.library = library;
+
+        }
+
+        @Override
+        public void run() {
+            try {
+                while (!Thread.interrupted()) {
+                    
+                }
+                Thread.sleep(60000);
+            } catch (Exception e) {
+                System.out.println("NotificationProcessor has encountered an interruption.\n" + e.getMessage());
+            }
+        }
     }
 }

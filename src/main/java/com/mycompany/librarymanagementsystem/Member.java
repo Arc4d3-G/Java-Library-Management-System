@@ -16,6 +16,7 @@ public class Member {
     public String name;
     public String email;
     public List<Book> borrowedBooks = new ArrayList<>();
+    public long feesOwed = 0;
 
     /**
      * Constructor method for new Book object.
@@ -39,6 +40,7 @@ public class Member {
         JSONObject memberObj = new JSONObject();
         memberObj.put("name", name);
         memberObj.put("email",email);
+        memberObj.put("feesOwed", feesOwed);
         JSONArray borrowedBooksArr = new JSONArray();
         if(!borrowedBooks.isEmpty()){
             for(Book book : borrowedBooks){

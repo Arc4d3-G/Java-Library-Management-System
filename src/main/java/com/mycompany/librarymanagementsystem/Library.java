@@ -23,6 +23,7 @@ public class Library {
     public List<Book> libraryBooks = new ArrayList<>();
     public List<Member> libraryMembers = new ArrayList<>();
     public int checkOutPeriod = 7;
+    public int dayLateFee = 10;
 
     Scanner scan = new Scanner(System.in);
 
@@ -41,7 +42,9 @@ public class Library {
          * library.
          */
         for (int i = 0; i < libraryBooks.size(); i++) {
+
             if (newBook.ISBN == libraryBooks.get(i).ISBN) {
+
                 alreadyAdded = true;
                 break;
             }
@@ -52,19 +55,19 @@ public class Library {
          * message is printed stating that the book already exists.
          */
         if (alreadyAdded == false) {
+
             libraryBooks.add(newBook);
             System.out.println(
                     "\n--- Book Successfully Added to Library ---\n"
             );
 
-            // Assertion for testing
-            assert libraryBooks.get(libraryBooks.size() - 1) == newBook : "Assertion Error: NewBook was not added.";
-
         } else {
+
             System.out.println(
                     "\nA book with ISBN #" + newBook.ISBN
                     + " already exists in library. "
                     + "\nThe new book was not added to the library.\n");
+
         }
 
     }
@@ -83,9 +86,13 @@ public class Library {
          * Display appropriate heading for table.
          */
         if (results == libraryBooks) {
+
             System.out.println("\n--- Viewing All Library Books ---\n");
+
         } else {
+
             System.out.println("\n--- Viewing Search Results ---\n");
+
         }
 
         if (!results.isEmpty()) {
@@ -123,14 +130,18 @@ public class Library {
                         ISBN, author, title, isAvailible
                 );
             }
+
             System.out.println(
                     "-----------------------------------------------"
                     + "------------------------------------------------\n"
             );
 
         } else {
+
             System.out.println("No Results Found.\n");
+
         }
+
         System.out.println("--- End of List ---\n");
     }
 
@@ -149,9 +160,12 @@ public class Library {
          * email already exists.
          */
         for (int i = 0; i < libraryMembers.size(); i++) {
+
             if (newMember.email.equalsIgnoreCase(libraryMembers.get(i).email)) {
+
                 alreadyAdded = true;
                 break;
+
             }
         }
 
@@ -160,16 +174,19 @@ public class Library {
          * message is printed stating that the member already exists.
          */
         if (alreadyAdded == false) {
+
             libraryMembers.add(newMember);
             System.out.println(
                     "\n--- Member Successfully Registered ---\n"
             );
 
         } else {
+
             System.out.println(
                     "\nA member with Email Address \"" + newMember.email
                     + "\" already exists. "
                     + "\nThe new Member was not registered.\n");
+
         }
 
     }
@@ -188,9 +205,13 @@ public class Library {
          * Display appropriate heading for table.
          */
         if (results == libraryMembers) {
+
             System.out.println("\n--- Viewing All Library Members ---\n");
+
         } else {
+
             System.out.println("\n--- Viewing Search Results ---\n");
+
         }
 
         if (!results.isEmpty()) {
@@ -202,11 +223,13 @@ public class Library {
              */
 
             System.out.printf(
-                    "%-30s %-30s %-100s \n",
-                    "NAME", "EMAIL", "CURRENT BOOKS CHECKED OUT"
+                    "%-30s %-30s %-30s %-100s \n",
+                    "NAME", "EMAIL", "FEES OWED", "CURRENT BOOKS CHECKED OUT"
             );
+
             System.out.println(
                     "-----------------------------------------------"
+                    + "------------------------------------------------"
                     + "------------------------------------------------"
             );
 
@@ -215,31 +238,36 @@ public class Library {
              * each member in our parameter list object.
              */
             for (int i = 0; i < results.size(); i++) {
-                Member member = results.get(i);
 
+                Member member = results.get(i);
                 boolean isBorrowing = !member.borrowedBooks.isEmpty();
 
-                System.out.printf("%-30s %-30s %-40s\n",
-                        member.name, member.email, isBorrowing
+                System.out.printf("%-30s %-30s %-30s %-40s\n",
+                        member.name, member.email, "R" + member.feesOwed, isBorrowing
                                 ? (member.borrowedBooks.get(0).title + " (Due " + member.borrowedBooks.get(0).dueDate + ")")
                                 : "NONE");
 
                 if (member.borrowedBooks.size() > 1) {
+
                     for (int j = 1; j < member.borrowedBooks.size(); j++) {
                         System.out.printf(
-                                "%-30s %-30s %-40s\n", " ", " ",
+                                "%-30s %-30s %-30s %-40s\n", " ", " ", " ",
                                 member.borrowedBooks.get(j).title + " (Due " + member.borrowedBooks.get(j).dueDate + ")");
                     }
+
                 }
 
                 System.out.println(
                         "-----------------------------------------------"
                         + "------------------------------------------------"
+                        + "------------------------------------------------"
                 );
             }
 
         } else {
+
             System.out.println("\nNo Results Found.\n");
+
         }
 
         System.out.println("\n--- End of List ---\n");
@@ -262,6 +290,7 @@ public class Library {
         List<Book> searchResults = new ArrayList<>();
 
         switch (searchParam[0]) {
+
             case "title" -> {
                 /**
                  * Loop through each book in libraryBooks and check if it's
@@ -270,7 +299,9 @@ public class Library {
                  * the searchResults list.
                  */
                 for (int i = 0; i < libraryBooks.size(); i++) {
+
                     if (libraryBooks.get(i).title.toLowerCase().contains(searchParam[1].toLowerCase())) {
+
                         searchResults.add(libraryBooks.get(i));
                     }
                 }
@@ -281,12 +312,16 @@ public class Library {
                  * Similar to case 1 loop, but matches by author instead.
                  */
                 for (int i = 0; i < libraryBooks.size(); i++) {
+
                     if (libraryBooks.get(i).author.toLowerCase().contains(searchParam[1].toLowerCase())) {
+
                         searchResults.add(libraryBooks.get(i));
+
                     }
                 }
             }
         }
+
         return searchResults;
     }
 
@@ -304,6 +339,7 @@ public class Library {
         List<Member> searchResults = new ArrayList<>();
 
         switch (searchParam[0]) {
+
             case "name" -> {
                 /**
                  * Loop through each member in libraryMembers and check if its
@@ -312,8 +348,11 @@ public class Library {
                  * the searchResults list.
                  */
                 for (int i = 0; i < libraryMembers.size(); i++) {
+
                     if (libraryMembers.get(i).name.toLowerCase().contains(searchParam[1].toLowerCase())) {
+
                         searchResults.add(libraryMembers.get(i));
+
                     }
                 }
             }
@@ -323,7 +362,9 @@ public class Library {
                  * Similar to case 1 loop, but matches by email instead.
                  */
                 for (int i = 0; i < libraryMembers.size(); i++) {
+
                     if (libraryMembers.get(i).email.toLowerCase().contains(searchParam[1].toLowerCase())) {
+
                         searchResults.add(libraryMembers.get(i));
                     }
                 }
@@ -363,21 +404,30 @@ public class Library {
             System.out.print("Enter Member Email: ");
 
             try {
+
                 String input = scan.nextLine();
                 String regex = "^(.+)@(.+)$";
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(input);
+
                 if (matcher.matches()) {
+
                     searchEmail = input;
                     break;
+
                 } else {
+
                     throw new Exception();
+
                 }
+
             } catch (Exception e) {
+
                 System.out.println(
                         "Invalid Email. Please ensure the email is a"
                         + " valid email address."
                 );
+
             }
 
         }
@@ -386,15 +436,19 @@ public class Library {
         for (int i = 0; i < libraryMembers.size(); i++) {
 
             Member member = libraryMembers.get(i);
+
             if (member.email.equalsIgnoreCase(searchEmail)) {
+
                 isMember = true;
                 matchedMember = member;
                 break;
+
             }
         }
 
         // If member is registed, proceeds with checkout, else checkout is aborted
         if (isMember) {
+
             System.out.println("""
                              
                              Member Match Found!
@@ -406,17 +460,23 @@ public class Library {
                 System.out.print("Book ISBN: ");
 
                 try {
+
                     String input = scan.nextLine();
                     long inputAsLong = Long.parseLong(input);
                     int length = input.length();
 
                     if (length >= 10 && length <= 13) {
+
                         searchISBN = inputAsLong;
                         break;
+
                     } else {
+
                         throw new Exception();
+
                     }
                 } catch (Exception e) {
+
                     System.out.println(
                             "Invalid ISBN. Please ensure the ISBN cosists"
                             + " of 10-13 digits without any letters/symbols."
@@ -426,10 +486,14 @@ public class Library {
 
             // Check if book with input ISBN exists in library
             for (int i = 0; i < libraryBooks.size(); i++) {
+
                 Book book = libraryBooks.get(i);
+
                 if (book.ISBN == searchISBN) {
+
                     matchedBook = book;
                     isBook = true;
+
                 }
             }
 
@@ -444,10 +508,6 @@ public class Library {
                 matchedBook.dueDate = LocalDate.now().plusDays(checkOutPeriod);
                 matchedBook.borrowedByMember = matchedMember;
                 matchedMember.borrowedBooks.add(matchedBook);
-
-                // Assertions for testing
-                assert matchedBook.isAvailable == false : "Assertion Error: Book's availability was not set to false";
-                assert matchedMember.borrowedBooks.get(matchedMember.borrowedBooks.size() - 1) == matchedBook : "Assertion Error: Book was not added to Member's borrowedBooks";
 
                 System.out.println("\nBook \"" + matchedBook.title
                         + "\" has successfully been checked out by Member \""
@@ -466,11 +526,14 @@ public class Library {
 
                 System.out.println("\nNo Book with ISBN \"" + searchISBN
                         + "\" was found. Checkout has been aborted.\n");
+
             }
 
         } else {
+
             System.out.println("\nNo Member with email \"" + searchEmail
                     + "\" was found. Checkout has been aborted.\n");
+
         }
     }
 
@@ -501,21 +564,28 @@ public class Library {
             System.out.print("Enter Member Email: ");
 
             try {
+
                 String input = scan.nextLine();
                 String regex = "^(.+)@(.+)$";
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(input);
+
                 if (matcher.matches()) {
+
                     searchEmail = input;
                     break;
+
                 } else {
+
                     throw new Exception();
                 }
             } catch (Exception e) {
+
                 System.out.println(
                         "Invalid Email. Please ensure the email is a"
                         + " valid email address."
                 );
+
             }
 
         }
@@ -524,7 +594,9 @@ public class Library {
         for (int i = 0; i < libraryMembers.size(); i++) {
 
             Member member = libraryMembers.get(i);
+
             if (member.email.equalsIgnoreCase(searchEmail)) {
+
                 isMember = true;
                 matchedMember = member;
                 break;
@@ -533,6 +605,7 @@ public class Library {
 
         // If member is registed, proceeds with checkout, else checkout is aborted
         if (isMember) {
+
             System.out.println("""
                              
                              Member Match Found!
@@ -544,17 +617,23 @@ public class Library {
                 System.out.print("Book ISBN: ");
 
                 try {
+
                     String input = scan.nextLine();
                     long inputAsLong = Long.parseLong(input);
                     int length = input.length();
 
                     if (length >= 10 && length <= 13) {
+
                         searchISBN = inputAsLong;
                         break;
+
                     } else {
+
                         throw new Exception();
+
                     }
                 } catch (Exception e) {
+
                     System.out.println(
                             "Invalid ISBN. Please ensure the ISBN cosists"
                             + " of 10-13 digits without any letters/symbols."
@@ -564,10 +643,14 @@ public class Library {
 
             // Check if book with input ISBN exists in library
             for (int i = 0; i < libraryBooks.size(); i++) {
+
                 Book book = libraryBooks.get(i);
+
                 if (book.ISBN == searchISBN) {
+
                     matchedBook = book;
                     isBook = true;
+
                 }
             }
 
@@ -580,7 +663,9 @@ public class Library {
              * list.
              */
             if (isBook && isBorrowed) {
+
                 matchedMember.borrowedBooks.remove(matchedBook);
+                matchedMember.feesOwed -= matchedBook.calcFees(checkOutPeriod, dayLateFee);
                 matchedBook.isAvailable = true;
                 matchedBook.borrowedByMember = null;
                 matchedBook.dueDate = null;
@@ -601,11 +686,13 @@ public class Library {
                 );
                 // If book is not found in library, check-in is aborted    
             } else {
+
                 System.out.println("\nNo Book with ISBN \"" + searchISBN
                         + "\" was found. Checkout has been aborted.\n");
             }
             // If member is not registered, check-in is aborted.   
         } else {
+
             System.out.println("\nNo Member with email \"" + searchEmail
                     + "\" was found. Checkout has been aborted.\n");
         }
@@ -616,25 +703,33 @@ public class Library {
      * libraryData.json.
      */
     public void save() {
+
         try {
+
             // Create a new JSONObject which will hold all our data as JSON.
             JSONObject libraryData = new JSONObject();
 
             // Add each book in libraryBooks to a JSONArray
             JSONArray bookData = new JSONArray();
+            
             for (Book book : libraryBooks) {
                 bookData.add(book.toJSON());
             }
+
             //The array is then set as the value to the "Books" key
             libraryData.put("Books", bookData);
 
             // Add each member to a JSONArray as well
             JSONArray memberData = new JSONArray();
+            
             for (Member member : libraryMembers) {
+
                 memberData.add(member.toJSON());
             }
+
             // Set the array to be the value for the "Members" key
             libraryData.put("Members", memberData);
+            
 
             // Finally, write the JSONObject to the "libraryData.json" file
             FileWriter file = new FileWriter("./libraryData.json");
@@ -642,6 +737,7 @@ public class Library {
             file.flush();
 
         } catch (IOException e) {
+
             System.out.println("Something went wrong while attempting to write"
                     + "the library data to libraryData.json.\n" + e.getMessage());
         }
@@ -665,14 +761,20 @@ public class Library {
              * libraryMembers List.
              */
             JSONArray memberData = (JSONArray) libraryData.get("Members");
+
             for (Object member : memberData) {
+
                 JSONObject memberObj = (JSONObject) member;
 
                 String name = (String) memberObj.get("name");
                 String email = (String) memberObj.get("email");
+                long feesOwed = (long) memberObj.get("feesOwed");
 
                 Member newMember = new Member(name, email);
+
+                newMember.feesOwed = feesOwed;
                 libraryMembers.add(newMember);
+
             }
 
             /**
@@ -680,7 +782,9 @@ public class Library {
              * values back into their intended types.
              */
             JSONArray booksData = (JSONArray) libraryData.get("Books");
+
             for (Object book : booksData) {
+
                 JSONObject bookObj = (JSONObject) book;
 
                 String title = (String) bookObj.get("title");
@@ -697,8 +801,11 @@ public class Library {
 
                 // Parse date string back to LocalDate if neccessary
                 if (dueDate.equals("none")) {
+
                     newBook.dueDate = null;
+
                 } else {
+
                     newBook.dueDate = LocalDate.parse(dueDate);
                 }
 
@@ -707,24 +814,32 @@ public class Library {
                  * property to equal that member
                  */
                 if (borrowedByMember != "none") {
+
                     for (Member member : libraryMembers) {
+
                         if (member.email.equals(borrowedByMember)) {
+
                             newBook.borrowedByMember = member;
                         }
                     }
                 }
+
                 libraryBooks.add(newBook);
             }
 
             /**
-             * Lastly, now that we have out books and members added back to the
+             * Lastly, now that we have our books and members added back to the
              * library, we can add the books that are borrowed by a specific
              * member back to the member's "borrowedBooks" property list.
              */
             for (Book book : libraryBooks) {
+
                 if (book.borrowedByMember != null) {
+
                     for (Member member : libraryMembers) {
+
                         if (book.borrowedByMember == member) {
+
                             member.borrowedBooks.add(book);
                         }
                     }
@@ -732,6 +847,7 @@ public class Library {
             }
 
         } catch (IOException | ParseException e) {
+
             System.out.println("Something went wrong trying to read/load the library"
                     + "from the libraryData.json file.\n" + e.getMessage());
         }
