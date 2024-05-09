@@ -1,9 +1,9 @@
 package com.mycompany.librarymanagementsystem;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
 
 /**
  *
@@ -11,40 +11,40 @@ import java.util.Scanner;
  */
 public class LibraryManagementSystem {
 
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
-        
+
         /**
          * Create a new Library object and load books/members from the
-         * libraryData.json file
+         * libraryData.json file.
          */
         Library library = new Library();
-
         library.load();
+        System.out.println("Library configured with " + library.checkOutPeriod 
+                + "-day Check Out Period & R" + library.dayLateFee 
+                + " late fee per day.");
 
         // Intro image for fun :)
-        String introMessage = """
+        System.out.println("""
               __...--~~~~~-._   _.-~~~~~--...__
             //    LIBRARY    `V'      BY       \\\\ 
-           //     MANAGER     |  DEWALD BREED   \\\\ 
+           //    MANAGER v2   |  DEWALD BREED   \\\\ 
           //__...--~~~~~~-._  |  _.-~~~~~~--...__\\\\ 
          //__.....----~~~~._\\ | /_.~~~~----.....__\\\\
          ===================\\\\|//====================
                             `---`
-        -----------------------------------------------""";
+        -----------------------------------------------""");
 
-        System.out.println(introMessage);
         Scanner scan = new Scanner(System.in);
         // Choice used for switch case below
         int choice;
         // used for sub-menu options
         int option;
 
-
+        // Instanciate and start thread
         Thread dueDateProcessor = new Thread(new DueDateProcessor(library));
         dueDateProcessor.start();
 
-//        Thread notificationProcessor = new Thread(new NotificationProcessor(library));
-//        notificationProcessor.start();
         /**
          * This loop continues to display the menu, prompting the user for an
          * option until "0" is input, at which point the loop exits and the
@@ -116,10 +116,11 @@ public class LibraryManagementSystem {
                         }
                     }
 
+                    // Check In
                     if (option == 1) {
                         library.checkIn();
                     }
-
+                    // Check Out
                     if (option == 2) {
                         library.checkOut();
                     }
@@ -154,7 +155,7 @@ public class LibraryManagementSystem {
                         }
                     }
 
-                    // View books
+                    // View all books
                     if (option == 1) {
                         library.viewBooks(library.libraryBooks);
                     }
@@ -175,6 +176,18 @@ public class LibraryManagementSystem {
                     }
                     // view notification log
                     if (option == 4) {
+                        System.out.println("\n--- Viewing Notification Log ---\n");
+                        if (library.libraryNotifications.isEmpty()) {
+                            System.out.println("No new notifactions to display...");
+                        } else {
+
+                            for (String notif : library.libraryNotifications) {
+
+                                System.out.println(notif);
+                            }
+                        }
+
+                        System.out.println("\n--- End of List ---\n");
 
                     }
 
@@ -218,15 +231,14 @@ public class LibraryManagementSystem {
                     }
                 }
             }
-            
+
             // Write all books/members to libraryData.json 
             library.save();
-            
+
         } while (choice != 0);
-        
-        // Close threads on exit
+
+        // Close thread on exit
         dueDateProcessor.interrupt();
-//        notificationProcessor.interrupt();
 
         // Save on Exit
         library.save();
@@ -249,11 +261,15 @@ public class LibraryManagementSystem {
                            -----------------------------------------------""");
     }
 
+    /**
+     * This thread runs on startup and is responsible for setting books as 
+     * "overdue", and sending notifications to members.
+     */
     static class DueDateProcessor implements Runnable {
 
         private final Library library;
-        int checkOutPeriod;
-        int dayLateFee;
+        private final int checkOutPeriod;
+        private final int dayLateFee;
 
         public DueDateProcessor(Library library) {
             this.library = library;
@@ -276,35 +292,36 @@ public class LibraryManagementSystem {
                     for (Member member : library.libraryMembers) {
                         for (Book book : member.borrowedBooks) {
                             totalOwed += book.calcFees(checkOutPeriod, dayLateFee);
+                            
+                            /**
+                             * Generate notification string if book is overdue and
+                             * add it to libraryNotifications for viewing.
+                             * Note that if the notification is a duplicate, it's not
+                             * added.
+                             */
+                            if (book.isOverDue) {
+                                
+                                String notif = LocalDate.now() + " - Book \"" 
+                                        + book.title + "\" borrowed by member \"" 
+                                        + book.borrowedByMember.name + "\" is Over Due."
+                                        + " An email notifying them has been sent...";
+                                
+                                if (!library.libraryNotifications.contains(notif)) {
+                                    library.libraryNotifications.add(notif);
+                                }
+
+                            }
+
                         }
                         member.feesOwed = totalOwed;
                     }
+                    // Thread sleeps after each iterarion for 60 sec
                     Thread.sleep(60000);
                 }
-            } catch (Exception e) {
-                System.out.println("DueDateProcessor has encountered an interruption.\n" + e.getMessage());
-            }
-        }
-    }
-
-    static class NotificationProcessor implements Runnable {
-
-        private final Library library;
-
-        public NotificationProcessor(Library library) {
-            this.library = library;
-
-        }
-
-        @Override
-        public void run() {
-            try {
-                while (!Thread.interrupted()) {
-                    
-                }
-                Thread.sleep(60000);
-            } catch (Exception e) {
-                System.out.println("NotificationProcessor has encountered an interruption.\n" + e.getMessage());
+            } catch (InterruptedException e) {
+                System.out.println(
+                        "DueDateProcessor has encountered an interruption. (" 
+                                + e.getMessage() + ")");
             }
         }
     }

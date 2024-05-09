@@ -20,10 +20,11 @@ import org.json.simple.parser.ParseException;
  */
 public class Library {
 
-    public List<Book> libraryBooks = new ArrayList<>();
-    public List<Member> libraryMembers = new ArrayList<>();
-    public int checkOutPeriod = 7;
-    public int dayLateFee = 10;
+    public List<Book> libraryBooks = new ArrayList<>(); // All books stored here
+    public List<Member> libraryMembers = new ArrayList<>(); // ALl members stored here
+    public List<String> libraryNotifications = new ArrayList<>(); // All notifications stored here
+    public int checkOutPeriod = 7; // Num of days book can be checked out before incurring late fees
+    public int dayLateFee = 10; // Num of fee per day.
 
     Scanner scan = new Scanner(System.in);
 
@@ -109,6 +110,7 @@ public class Library {
             System.out.println(
                     "-----------------------------------------------"
                     + "------------------------------------------------"
+                    + "------------------------------------------------"
             );
 
             /**
@@ -123,7 +125,8 @@ public class Library {
                 String author = book.author;
                 String isAvailible = book.isAvailable
                         ? "Availible"
-                        : "Checked out (Member: " + book.borrowedByMember.email + ", Due date: " + book.dueDate + ")";
+                        : "Checked out (Member: " + book.borrowedByMember.email
+                        + ", Due date: " + book.dueDate + ")";
 
                 System.out.printf(
                         "%-16s %-25s %-40s %-10s \n",
@@ -133,6 +136,7 @@ public class Library {
 
             System.out.println(
                     "-----------------------------------------------"
+                    + "------------------------------------------------"
                     + "------------------------------------------------\n"
             );
 
@@ -242,9 +246,11 @@ public class Library {
                 Member member = results.get(i);
                 boolean isBorrowing = !member.borrowedBooks.isEmpty();
 
-                System.out.printf("%-30s %-30s %-30s %-40s\n",
-                        member.name, member.email, "R" + member.feesOwed, isBorrowing
-                                ? (member.borrowedBooks.get(0).title + " (Due " + member.borrowedBooks.get(0).dueDate + ")")
+                System.out.printf(
+                        "%-30s %-30s %-30s %-40s\n",
+                        member.name, member.email, "R" + member.feesOwed,isBorrowing
+                                ? (member.borrowedBooks.get(0).title 
+                                        + " (Due " + member.borrowedBooks.get(0).dueDate + ")")
                                 : "NONE");
 
                 if (member.borrowedBooks.size() > 1) {
@@ -252,7 +258,8 @@ public class Library {
                     for (int j = 1; j < member.borrowedBooks.size(); j++) {
                         System.out.printf(
                                 "%-30s %-30s %-30s %-40s\n", " ", " ", " ",
-                                member.borrowedBooks.get(j).title + " (Due " + member.borrowedBooks.get(j).dueDate + ")");
+                                member.borrowedBooks.get(j).title + " (Due " 
+                                        + member.borrowedBooks.get(j).dueDate + ")");
                     }
 
                 }
@@ -499,8 +506,9 @@ public class Library {
 
             /**
              * Only if the book is registered & is available for checkout will
-             * the book be checked out. This is done by setting isAvailable to
-             * false, and adding the book the the member's borrowedBooks list.
+             * the book be checked out. This is done by setting the book's isAvailable 
+             * to false, dueDate to the current date, borrowedByMember to the member
+             * and adding the book the the member's borrowedBooks list.
              */
             if (isBook && matchedBook.isAvailable) {
 
@@ -514,7 +522,7 @@ public class Library {
                         + matchedMember.name + "\"."
                         + "\n---- Checkout Complete ----\n");
 
-                // if the book exists but isn't available, checkout is aborted.    
+            // if the book exists but isn't available, checkout is aborted.    
             } else if (isBook && matchedBook.isAvailable == false) {
 
                 System.out.println("\nBook \"" + matchedBook.title
@@ -539,8 +547,7 @@ public class Library {
 
     /**
      * Method is similar to {@link #checkOut()}, but it set's the book's
-     * availability to true and removes the book from the member's borrowedBooks
-     * list.
+     * properties back to a "pre-checkout" state
      */
     public void checkIn() {
 
@@ -658,11 +665,19 @@ public class Library {
 
             /**
              * Only if the book is registered and was checked out by the member
-             * will the book be checked in. This is done by setting isAvailable
-             * to true, and removing the book from the member's borrowedBooks
-             * list.
+             * will the book be checked in. This is done by adding a new notification
+             * to libraryNotifications indicating the book was returned and a fee
+             * was paid (if overdue). Next we set the book and member's properties
+             * back to a "pre-checkout" state.
              */
             if (isBook && isBorrowed) {
+
+                String notif = LocalDate.now() + " - Book \"" + matchedBook.title
+                        + "\" borrowed by member \"" + matchedMember.name
+                        + "\" has been returned. A late fee of R"
+                        + matchedBook.calcFees(checkOutPeriod, dayLateFee)
+                        + " has been paid...";
+                libraryNotifications.add(notif);
 
                 matchedMember.borrowedBooks.remove(matchedBook);
                 matchedMember.feesOwed -= matchedBook.calcFees(checkOutPeriod, dayLateFee);
@@ -699,19 +714,18 @@ public class Library {
     }
 
     /**
-     * Function parses all libraryBooks and libraryMembers to Json writes it to
+     * Function parses all libraryBooks and libraryMembers to Json & writes it to
      * libraryData.json.
      */
     public void save() {
 
-        try {
+        try (FileWriter file = new FileWriter("./libraryData.json")) {
 
             // Create a new JSONObject which will hold all our data as JSON.
             JSONObject libraryData = new JSONObject();
 
             // Add each book in libraryBooks to a JSONArray
             JSONArray bookData = new JSONArray();
-            
             for (Book book : libraryBooks) {
                 bookData.add(book.toJSON());
             }
@@ -721,18 +735,15 @@ public class Library {
 
             // Add each member to a JSONArray as well
             JSONArray memberData = new JSONArray();
-            
             for (Member member : libraryMembers) {
-
                 memberData.add(member.toJSON());
             }
 
             // Set the array to be the value for the "Members" key
             libraryData.put("Members", memberData);
-            
 
             // Finally, write the JSONObject to the "libraryData.json" file
-            FileWriter file = new FileWriter("./libraryData.json");
+            
             file.write(libraryData.toJSONString());
             file.flush();
 
@@ -749,10 +760,12 @@ public class Library {
      * library.
      */
     public void load() {
-        try {
-            // Instanciate JSONParser and proceed to parse our libraryDate json file 
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader("./libraryData.json"));
+        
+        // Instanciate JSONParser and proceed to parse our libraryDate json file 
+        JSONParser parser = new JSONParser();
+        try (FileReader reader = new FileReader("./libraryData.json")) {
+                        
+            Object obj = parser.parse(reader);
             JSONObject libraryData = (JSONObject) obj;
 
             /**
@@ -849,7 +862,9 @@ public class Library {
         } catch (IOException | ParseException e) {
 
             System.out.println("Something went wrong trying to read/load the library"
-                    + "from the libraryData.json file.\n" + e.getMessage());
+                    + " data from the libraryData.json file. (" + e.getMessage()+")\n"
+                            + "The program will continue to function, but all previous"
+                            + " data is lost.");
         }
     }
 }

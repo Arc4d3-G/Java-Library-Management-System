@@ -33,39 +33,52 @@ public class Book {
         this.title = title;
         this.author = author;
     }
-    
+
     /**
-     * Method creates a new JSONObject with each book property as
-     * a key:value pair.
-     * 
+     * Method creates a new JSONObject with each book property as a key: value
+     * pair.
+     *
      * @return JSONObject
      */
-    public JSONObject toJSON(){
+    public JSONObject toJSON() {
         JSONObject bookObj = new JSONObject();
         bookObj.put("title", title);
-        bookObj.put("ISBN",ISBN);
+        bookObj.put("ISBN", ISBN);
         bookObj.put("author", author);
         bookObj.put("isAvailable", isAvailable);
         bookObj.put("dueDate", dueDate != null ? dueDate.toString() : "none");
         bookObj.put("isOverDue", isOverDue);
-        bookObj.put("borrowedByMember", borrowedByMember != null ? borrowedByMember.email : "none" );
-        
+        bookObj.put("borrowedByMember", borrowedByMember != null ? borrowedByMember.email : "none");
+
         return bookObj;
     }
-    
+
+    /**
+     * Calculates if a book is overdue by comparing it's dueDate to the current
+     * date.
+     *
+     * @param checkOutPeriod
+     * @return Boolean
+     */
     public boolean checkIfOverDue(int checkOutPeriod) {
         return dueDate != null && LocalDate.now().isAfter(dueDate);
     }
-    
+
+    /**
+     * Calculates and returns the total fee the book has incurred.
+     *
+     * @param checkOutPeriod
+     * @param dayLateFee
+     * @return long totalFee | 0
+     */
     public long calcFees(int checkOutPeriod, int dayLateFee) {
-        if (isOverDue){
+        if (isOverDue) {
             long daysLate = ChronoUnit.DAYS.between(dueDate, LocalDate.now());
             long totalFee = dayLateFee * daysLate;
             return totalFee;
         } else {
             return 0;
         }
-        
     }
 
 }
